@@ -12,11 +12,10 @@ Build (Linux):
 
 ```shell
 mkdir build
+ln -s res build/res
 cd build
 make -f ../Makefile
 
-# create link to resources folder
-ln -s ../res res
 # then run
 ./Nictophobia
 ```
