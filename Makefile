@@ -1,5 +1,8 @@
 PROJECT_ROOT = $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
+DIRS = miocpp necore necore/gl necore/input
+$(info $(shell mkdir -p $(DIRS)))
+
 BUILD_MODE = run
 
 OBJS = Nictophobia.o \
