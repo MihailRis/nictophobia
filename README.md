@@ -7,6 +7,7 @@ Small C++ game-engine (2D and minimal 3D) (GL+GLFW+AL+glm)
 
 Project also contain subprojects:
 - miocpp - C++ implementation of [MIO](https://github.com/MihailRis/mio-files) storages interface
+- necore - nictophobia engine itself
 
 Build (Linux):
 
