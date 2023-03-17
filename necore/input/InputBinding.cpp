@@ -40,20 +40,23 @@ bool InputBinding::justInactived() const {
 }
 
 
-InputBindings::~InputBindings() {
+template <typename T>
+InputBindings<T>::~InputBindings() {
 	for (auto it = bindings.begin(); it != bindings.end(); it++) {
 	    delete it->second;
 	}
 }
 
-void InputBindings::bind(std::string name, trigger_func trigger) {
+template <typename T>
+void InputBindings<T>::bind(T name, trigger_func trigger) {
 	auto binding = bindings.find(name);
 	if (binding == bindings.end()) {
 		bindings[name] = new InputBinding(trigger);
 	}
 }
 
-void InputBindings::rebind(std::string name, trigger_func trigger) {
+template <typename T>
+void InputBindings<T>::rebind(T name, trigger_func trigger) {
 	auto binding = bindings.find(name);
 	if (binding == bindings.end()) {
 		bindings[name] = new InputBinding(trigger);
@@ -62,20 +65,23 @@ void InputBindings::rebind(std::string name, trigger_func trigger) {
 	}
 }
 
-void InputBindings::unbind(std::string name) {
+template <typename T>
+void InputBindings<T>::unbind(T name) {
 	auto binding = bindings.find(name);
 	if (binding != bindings.end()) {
 		bindings.erase(binding);
 	}
 }
 
-void InputBindings::update() {
+template <typename T>
+void InputBindings<T>::update() {
 	for (auto it = bindings.begin(); it != bindings.end(); it++) {
 	    it->second->update();
 	}
 }
 
-bool InputBindings::isActive(std::string name) {
+template <typename T>
+bool InputBindings<T>::isActive(T name) {
 	auto binding = bindings.find(name);
 	if (binding == bindings.end()) {
 		return false;
@@ -83,7 +89,8 @@ bool InputBindings::isActive(std::string name) {
 	return binding->second->isActive();
 }
 
-bool InputBindings::justActived(std::string name) {
+template <typename T>
+bool InputBindings<T>::justActived(T name) {
 	auto binding = bindings.find(name);
 	if (binding == bindings.end()) {
 		return false;
@@ -91,7 +98,8 @@ bool InputBindings::justActived(std::string name) {
 	return binding->second->justActived();
 }
 
-bool InputBindings::justInactived(std::string name) {
+template <typename T>
+bool InputBindings<T>::justInactived(T name) {
 	auto binding = bindings.find(name);
 	if (binding == bindings.end()) {
 		return false;

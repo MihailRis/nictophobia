@@ -20,18 +20,21 @@ public:
 	bool justInactived() const;
 };
 
+template <typename T>
 class InputBindings {
-	std::unordered_map<std::string, InputBinding*> bindings;
+	std::unordered_map<T, InputBinding*> bindings;
 public:
 	virtual ~InputBindings();
-	void bind(std::string name, trigger_func trigger);
-	void rebind(std::string name, trigger_func trigger);
-	void unbind(std::string name);
+	void bind(T name, trigger_func trigger);
+	void rebind(T name, trigger_func trigger);
+	void unbind(T name);
 	void update();
 
-	bool isActive(std::string name);
-	bool justActived(std::string name);
-	bool justInactived(std::string name);
+	bool isActive(T name);
+	bool justActived(T name);
+	bool justInactived(T name);
 };
+template class InputBindings<int>;
+template class InputBindings<std::string>;
 
 #endif /* NECORE_INPUT_INPUTBINDING_H_ */

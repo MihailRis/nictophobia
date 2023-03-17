@@ -32,7 +32,7 @@ int main(int argc, char **argv) {
 	Camera camera({0, 0, 0}, 1.0f, false);
 	InputProcessor* processorPtr = &processor;
 
-	InputBindings bindings;
+	InputBindings<std::string> bindings;
 	bindings.bind("up", [processorPtr](){return processorPtr->pressed(NC_KEY_W);});
 	bindings.bind("down", [processorPtr](){return processorPtr->pressed(NC_KEY_S);});
 	bindings.bind("left", [processorPtr](){return processorPtr->pressed(NC_KEY_A);});
