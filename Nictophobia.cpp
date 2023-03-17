@@ -31,14 +31,32 @@ int main(int argc, char **argv) {
 
 	Camera camera({0, 0, 0}, 1.0f, false);
 	InputProcessor* processorPtr = &processor;
-	InputBinding binding {[processorPtr](){return processorPtr->pressed(NC_KEY_W);}};
+	InputBinding bindingUp {[processorPtr](){return processorPtr->pressed(NC_KEY_W);}};
+	InputBinding bindingDown {[processorPtr](){return processorPtr->pressed(NC_KEY_S);}};
+	InputBinding bindingLeft {[processorPtr](){return processorPtr->pressed(NC_KEY_A);}};
+	InputBinding bindingRight {[processorPtr](){return processorPtr->pressed(NC_KEY_D);}};
+
+	float x = 0;
+	float y = 0;
 
 	while (!window->shouldClose()) {
 		window->pollEvents();
-		binding.update();
+		bindingUp.update();
+		bindingDown.update();
+		bindingLeft.update();
+		bindingRight.update();
+
+		float speed = 5.0f;
+
+		if (bindingUp.isActive()) {y += speed;};
+		if (bindingDown.isActive()) {y -= speed;};
+		if (bindingLeft.isActive()) {x -= speed;};
+		if (bindingRight.isActive()) {x += speed;};
+
 		int w = window->getWidth();
 		int h = window->getHeight();
 		camera.setFov(h);
+
 		window->clear();
 
 		shader->use();
@@ -47,7 +65,7 @@ int main(int argc, char **argv) {
 		));
 		shader->uniformMatrix("u_view", camera.getView());
 
-		batch.rect(w/2-50, h/2-50, 100, 100);
+		batch.rect(x-5, y-5, 10, 10);
 		batch.flush();
 
 		window->swapBuffers();
