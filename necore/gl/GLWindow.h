@@ -38,6 +38,10 @@ public:
 
 	bool isCursorVisible();
 
+	unsigned int getWidth() const;
+
+	unsigned int getHeight() const;
+
 	static Window* create(int width, int height, const char* title);
 };
 

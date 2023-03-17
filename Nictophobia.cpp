@@ -3,6 +3,7 @@
 
 #include "necore/Window.h"
 #include "necore/Batch2D.h"
+#include "necore/Camera.h"
 #include "necore/input/InputProcessor.h"
 #include "necore/input/InputBinding.h"
 #include "necore/input/input_constants.h"
@@ -28,18 +29,25 @@ int main(int argc, char **argv) {
 	window->setInputProcessor(&processor);
 	window->swapInterval(1);
 
+	Camera camera({0, 0, 0}, 1.0f, false);
 	InputProcessor* processorPtr = &processor;
 	InputBinding binding {[processorPtr](){return processorPtr->pressed(NC_KEY_W);}};
 
 	while (!window->shouldClose()) {
 		window->pollEvents();
 		binding.update();
-
+		int w = window->getWidth();
+		int h = window->getHeight();
+		camera.setFov(h);
 		window->clear();
 
 		shader->use();
+		shader->uniformMatrix("u_proj", camera.getProjection(
+				(float)w/(float)h
+		));
+		shader->uniformMatrix("u_view", camera.getView());
 
-		batch.rect(-0.5f, 0.2f, 0.3f, 0.1f);
+		batch.rect(w/2-50, h/2-50, 100, 100);
 		batch.flush();
 
 		window->swapBuffers();

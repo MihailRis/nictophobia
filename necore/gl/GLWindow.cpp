@@ -39,6 +39,7 @@ void GLWindow::cursor_position_callback(GLFWwindow* glfwwindow, double xpos, dou
 void GLWindow::window_size_callback(GLFWwindow* glfwwindow, int width, int height){
 	GLWindow* window = GLWindow::wrappers[glfwwindow];
 	window->width = width;
+	window->height = height;
 	glViewport(0,0, width, height);
 }
 
@@ -86,6 +87,14 @@ void GLWindow::setCursorVisibility(bool visible) {
 
 bool GLWindow::isCursorVisible() {
 	return glfwGetInputMode(window, GLFW_CURSOR) == GLFW_CURSOR_NORMAL;
+}
+
+unsigned int GLWindow::getWidth() const {
+	return width;
+}
+
+unsigned int GLWindow::getHeight() const {
+	return height;
 }
 
 

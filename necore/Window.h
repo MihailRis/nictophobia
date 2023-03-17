@@ -25,6 +25,10 @@ public:
 
 	virtual void clear() = 0;
 
+	virtual unsigned int getWidth() const = 0;
+
+	virtual unsigned int getHeight() const = 0;
+
 	virtual void setInputProcessor(InputProcessor* processor) {
 		this->processor = processor;
 	}

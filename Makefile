@@ -14,6 +14,7 @@ OBJS = Nictophobia.o \
 	necore/Shader.o \
 	necore/Mesh.o \
 	necore/Batch2D.o \
+	necore/Camera.o \
 	necore/input/InputProcessor.o \
 	necore/input/InputBinding.o \
 	necore/gl/GLWindow.o \
