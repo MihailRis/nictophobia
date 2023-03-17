@@ -31,27 +31,25 @@ int main(int argc, char **argv) {
 
 	Camera camera({0, 0, 0}, 1.0f, false);
 	InputProcessor* processorPtr = &processor;
-	InputBinding bindingUp {[processorPtr](){return processorPtr->pressed(NC_KEY_W);}};
-	InputBinding bindingDown {[processorPtr](){return processorPtr->pressed(NC_KEY_S);}};
-	InputBinding bindingLeft {[processorPtr](){return processorPtr->pressed(NC_KEY_A);}};
-	InputBinding bindingRight {[processorPtr](){return processorPtr->pressed(NC_KEY_D);}};
 
-	float x = 0;
-	float y = 0;
+	InputBindings bindings;
+	bindings.bind("up", [processorPtr](){return processorPtr->pressed(NC_KEY_W);});
+	bindings.bind("down", [processorPtr](){return processorPtr->pressed(NC_KEY_S);});
+	bindings.bind("left", [processorPtr](){return processorPtr->pressed(NC_KEY_A);});
+	bindings.bind("right", [processorPtr](){return processorPtr->pressed(NC_KEY_D);});
+
+	float x = 500;
+	float y = 500;
 
 	while (!window->shouldClose()) {
 		window->pollEvents();
-		bindingUp.update();
-		bindingDown.update();
-		bindingLeft.update();
-		bindingRight.update();
+		bindings.update();
 
 		float speed = 5.0f;
-
-		if (bindingUp.isActive()) {y += speed;};
-		if (bindingDown.isActive()) {y -= speed;};
-		if (bindingLeft.isActive()) {x -= speed;};
-		if (bindingRight.isActive()) {x += speed;};
+		if (bindings.isActive("up")) {y += speed;};
+		if (bindings.isActive("down")) {y -= speed;};
+		if (bindings.isActive("left")) {x -= speed;};
+		if (bindings.isActive("right")) {x += speed;};
 
 		int w = window->getWidth();
 		int h = window->getHeight();
