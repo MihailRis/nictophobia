@@ -1,6 +1,6 @@
 PROJECT_ROOT = $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
-DIRS = miocpp necore necore/gl necore/input
+DIRS = miocpp necore necore/gl necore/input necore/formats
 $(info $(shell mkdir -p $(DIRS)))
 
 BUILD_MODE = run
@@ -18,6 +18,8 @@ OBJS = Nictophobia.o \
 	necore/Mesh.o \
 	necore/Batch2D.o \
 	necore/Camera.o \
+	necore/RasterImage.o \
+	necore/formats/png_format.o \
 	necore/input/InputProcessor.o \
 	necore/input/InputBinding.o \
 	necore/gl/GLWindow.o \
@@ -40,7 +42,7 @@ endif
 
 CFLAGS += -std=c++17
 
-LDLIBS = -lGL -lglfw -lGLEW
+LDLIBS = -lGL -lglfw -lGLEW -lpng
 
 all:	Nictophobia
 
@@ -55,6 +57,8 @@ Nictophobia:	$(OBJS) $(LDLIBS)
 necore/gl/%.o:	$(PROJECT_ROOT)necore/gl/%.cpp
 	$(CXX) -c $(CFLAGS) $(CXXFLAGS) $(CPPFLAGS) -o $@ $<
 necore/input/%.o:	$(PROJECT_ROOT)necore/input/%.cpp
+	$(CXX) -c $(CFLAGS) $(CXXFLAGS) $(CPPFLAGS) -o $@ $<
+necore/formats/%.o:	$(PROJECT_ROOT)necore/formats/%.cpp
 	$(CXX) -c $(CFLAGS) $(CXXFLAGS) $(CPPFLAGS) -o $@ $<
 
 necore/%.o:	$(PROJECT_ROOT)necore/%.cpp
