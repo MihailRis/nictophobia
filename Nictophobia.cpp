@@ -62,14 +62,12 @@ void finishTheGame(NeContext* context) {
 
 
 int main(int argc, char **argv) {
-
 	Window* window = GLWindow::create(900, 600, "<example>");
 	NeContext* context = new NeContext(window);
 	buildTheGame(context);
 
 	Batch2D batch(1024);
 	window->swapInterval(1);
-
 
 	Texture* texture = (Texture*)context->assets.get("textures/test");
 	Shader* shader = (Shader*)context->assets.get("shaders/ui");
