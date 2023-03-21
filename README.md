@@ -15,7 +15,7 @@ Build (Linux):
 mkdir build
 ln -s res build/res
 cd build
-make -f ../Makefile
+make -f ../Makefile BUILD_MODE=run
 
 # then run
 ./Nictophobia
