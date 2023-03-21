@@ -32,6 +32,10 @@ public:
 	virtual void setInputProcessor(InputProcessor* processor) {
 		this->processor = processor;
 	}
+
+	virtual InputProcessor* getInputProcessor() const {
+		return processor;
+	}
 };
 
 #endif /* WINDOW_H_ */

@@ -1,4 +1,5 @@
 #include "iopath.h"
+#include "mio.h"
 
 using namespace std;
 
@@ -72,4 +73,12 @@ string iopath::nameNoExt() const {
 			return _path.substr(sposition+1, _path.length());
 		}
 	}
+}
+
+std::string iopath::readString() const {
+	return mio::readString(this);
+}
+
+unsigned char* iopath::readBytes(size_t* size) const {
+	return mio::readBytes(this, size);
 }

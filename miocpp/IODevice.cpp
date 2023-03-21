@@ -18,13 +18,13 @@ std::string IODevice::readString(std::string path) {
 	return s;
 }
 
-unsigned char* IODevice::readBytes(std::string path, size_t& length) {
+unsigned char* IODevice::readBytes(std::string path, size_t* length) {
 	FileReader* reader = read(path);
 	if (reader == nullptr)
 		return nullptr;
-	length = reader->available();
-	unsigned char* buffer = new unsigned char[length];
-	reader->readFully((char*)buffer, length);
+	*length = reader->available();
+	unsigned char* buffer = new unsigned char[*length];
+	reader->readFully((char*)buffer, *length);
 	delete reader;
 	return buffer;
 }

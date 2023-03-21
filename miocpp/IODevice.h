@@ -15,7 +15,7 @@ public:
 	virtual bool isDir(std::string path) = 0;
 
 	virtual std::string readString(std::string path);
-	virtual unsigned char* readBytes(std::string path, size_t& length);
+	virtual unsigned char* readBytes(std::string path, size_t* length);
 };
 
 #endif /* MIOCPP_IODEVICE_H_ */

@@ -27,6 +27,9 @@ public:
 	std::string toStr() const {
 		return _label + ":" + _path;
 	}
+
+	std::string readString() const;
+	unsigned char* readBytes(size_t* size) const;
 };
 
 #endif /* MIOCPP_IOPATH_H_ */

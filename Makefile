@@ -9,6 +9,7 @@ OBJS = Nictophobia.o \
 	miocpp/DirDevice.o \
 	miocpp/FileReader.o \
 	miocpp/PhysicalFileReader.o\
+	miocpp/mio.o \
 	\
 	necore/Window.o \
 	necore/Texture.o \
@@ -17,6 +18,7 @@ OBJS = Nictophobia.o \
 	necore/Batch2D.o \
 	necore/Camera.o \
 	necore/RasterImage.o \
+	necore/NeContext.o \
 	necore/formats/png_format.o \
 	necore/input/InputProcessor.o \
 	necore/input/InputBinding.o \

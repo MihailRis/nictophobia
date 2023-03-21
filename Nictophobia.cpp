@@ -6,6 +6,7 @@
 #include "necore/Camera.h"
 #include "necore/RasterImage.h"
 #include "necore/Texture.h"
+#include "necore/NeContext.h"
 #include "necore/formats/png_format.h"
 #include "necore/assets/Assets.h"
 #include "necore/assets/AssetsLoader.h"
@@ -18,70 +19,76 @@
 #include "necore/gl/GLTexture.h"
 #include "miocpp/iopath.h"
 #include "miocpp/DirDevice.h"
+#include "miocpp/mio.h"
 
 #include <glm/glm.hpp>
 
-Texture* load_texture(IODevice* device, iopath path) {
-	size_t datalength;
-	unsigned char* bytes = device->readBytes(path.path(), datalength);
-	RasterImage* image = load_png_image(bytes);
-	delete[] bytes;
+Texture* load_texture(iopath);
 
-	Texture* texture = GLTexture::fromImage(image);
-	delete image;
-	return texture;
+void queueAssets(AssetsLoader* loader) {
+	loader->queue("textures/test", [](){
+		Texture* texture = load_texture(iopath("res:test.png"));
+		return NeResource(SIMPLE, texture, [](void* ptr){delete (Texture*)ptr;});
+	});
+	loader->queue("shaders/ui", [](){
+		Shader* shader = GLShader::create(
+				iopath("res:ui.glslv").readString(),
+				iopath("res:ui.glslf").readString());
+		return NeResource(SIMPLE, shader, [](void* ptr){delete (Shader*)ptr;});
+	});
 }
 
+void buildTheGame(NeContext* context) {
+	mio::add_device("res", new DirDevice("res"));
+
+	AssetsLoader loader;
+	queueAssets(&loader);
+	loader.performAll(&context->assets);
+
+	InputProcessor* processor = new InputProcessor();
+	context->window->setInputProcessor(processor);
+
+	InputBindings<std::string>* bindings = &context->bindings;
+	bindings->bind("up", [processor](){return processor->pressed(NC_KEY_W);});
+	bindings->bind("down", [processor](){return processor->pressed(NC_KEY_S);});
+	bindings->bind("left", [processor](){return processor->pressed(NC_KEY_A);});
+	bindings->bind("right", [processor](){return processor->pressed(NC_KEY_D);});
+}
+
+void finishTheGame(NeContext* context) {
+	delete mio::pop_device("res");
+	delete context->window->getInputProcessor();
+	context->window->setInputProcessor(nullptr);
+}
+
+
 int main(int argc, char **argv) {
-	DirDevice device("res");
-	DirDevice* devicePtr = &device;
 
 	Window* window = GLWindow::create(900, 600, "<example>");
+	NeContext* context = new NeContext(window);
+	buildTheGame(context);
 
 	Batch2D batch(1024);
-	InputProcessor processor;
-	window->setInputProcessor(&processor);
 	window->swapInterval(1);
 
 
-	Assets assets;
-	AssetsLoader loader;
-	loader.queue("textures/test", [devicePtr](){
-		Texture* texture = load_texture(devicePtr, iopath("res:test.png"));
-		return NeResource(SIMPLE, texture, [](void* ptr){delete (Texture*)ptr;});
-	});
-	loader.queue("shaders/ui", [devicePtr](){
-		Shader* shader = GLShader::create(
-				devicePtr->readString("ui.glslv"),
-				devicePtr->readString("ui.glslf"));
-		return NeResource(SIMPLE, shader, [](void* ptr){delete (Shader*)ptr;});
-	});
-	loader.performAll(&assets);
-
-	Texture* texture = (Texture*)assets.get("textures/test");
-	Shader* shader = (Shader*)assets.get("shaders/ui");
+	Texture* texture = (Texture*)context->assets.get("textures/test");
+	Shader* shader = (Shader*)context->assets.get("shaders/ui");
 
 	Camera camera({0, 0, 0}, 1.0f, false);
-	InputProcessor* processorPtr = &processor;
-
-	InputBindings<std::string> bindings;
-	bindings.bind("up", [processorPtr](){return processorPtr->pressed(NC_KEY_W);});
-	bindings.bind("down", [processorPtr](){return processorPtr->pressed(NC_KEY_S);});
-	bindings.bind("left", [processorPtr](){return processorPtr->pressed(NC_KEY_A);});
-	bindings.bind("right", [processorPtr](){return processorPtr->pressed(NC_KEY_D);});
 
 	float x = 200;
 	float y = 200;
 
 	while (!window->shouldClose()) {
 		window->pollEvents();
-		bindings.update();
+		context->bindings.update();
 
 		float speed = 5.0f;
-		if (bindings.isActive("up")) {y += speed;};
-		if (bindings.isActive("down")) {y -= speed;};
-		if (bindings.isActive("left")) {x -= speed;};
-		if (bindings.isActive("right")) {x += speed;};
+		if (context->bindings.isActive("up")) {y += speed;};
+		if (context->bindings.isActive("down")) {y -= speed;};
+		if (context->bindings.isActive("left")) {x -= speed;};
+		if (context->bindings.isActive("right")) {x += speed;};
 
 		int w = window->getWidth();
 		int h = window->getHeight();
@@ -101,6 +108,19 @@ int main(int argc, char **argv) {
 
 		window->swapBuffers();
 	}
+	finishTheGame(context);
+	delete context;
 	delete window;
 	return 0;
+}
+
+Texture* load_texture(iopath path) {
+	size_t datalength;
+	unsigned char* bytes = path.readBytes(&datalength);
+	RasterImage* image = load_png_image(bytes);
+	delete[] bytes;
+
+	Texture* texture = GLTexture::fromImage(image);
+	delete image;
+	return texture;
 }
