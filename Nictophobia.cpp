@@ -21,14 +21,22 @@
 
 #include <glm/glm.hpp>
 
+Texture* load_texture(IODevice* device, iopath path) {
+	size_t datalength;
+	unsigned char* bytes = device->readBytes(path.path(), datalength);
+	RasterImage* image = load_png_image(bytes);
+	delete[] bytes;
+
+	Texture* texture = GLTexture::fromImage(image);
+	delete image;
+	return texture;
+}
+
 int main(int argc, char **argv) {
 	DirDevice device("res");
 	DirDevice* devicePtr = &device;
 
 	Window* window = GLWindow::create(900, 600, "<example>");
-	Shader* shader = GLShader::create(
-			device.readString("ui.glslv"),
-			device.readString("ui.glslf"));
 
 	Batch2D batch(1024);
 	InputProcessor processor;
@@ -39,19 +47,19 @@ int main(int argc, char **argv) {
 	Assets assets;
 	AssetsLoader loader;
 	loader.queue("textures/test", [devicePtr](){
-		size_t datalength;
-		unsigned char* bytes = devicePtr->readBytes("test.png", datalength);
-		RasterImage* image = load_png_image(bytes);
-		delete[] bytes;
-
-		Texture* texture = GLTexture::fromImage(image);
-		delete image;
+		Texture* texture = load_texture(devicePtr, iopath("res:test.png"));
 		return NeResource(SIMPLE, texture, [](void* ptr){delete (Texture*)ptr;});
+	});
+	loader.queue("shaders/ui", [devicePtr](){
+		Shader* shader = GLShader::create(
+				devicePtr->readString("ui.glslv"),
+				devicePtr->readString("ui.glslf"));
+		return NeResource(SIMPLE, shader, [](void* ptr){delete (Shader*)ptr;});
 	});
 	loader.performAll(&assets);
 
 	Texture* texture = (Texture*)assets.get("textures/test");
-
+	Shader* shader = (Shader*)assets.get("shaders/ui");
 
 	Camera camera({0, 0, 0}, 1.0f, false);
 	InputProcessor* processorPtr = &processor;
@@ -93,7 +101,6 @@ int main(int argc, char **argv) {
 
 		window->swapBuffers();
 	}
-	delete shader;
 	delete window;
 	return 0;
 }
