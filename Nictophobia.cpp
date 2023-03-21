@@ -7,6 +7,8 @@
 #include "necore/RasterImage.h"
 #include "necore/Texture.h"
 #include "necore/formats/png_format.h"
+#include "necore/assets/Assets.h"
+#include "necore/assets/AssetsLoader.h"
 #include "necore/input/InputProcessor.h"
 #include "necore/input/InputBinding.h"
 #include "necore/input/input_constants.h"
@@ -21,6 +23,7 @@
 
 int main(int argc, char **argv) {
 	DirDevice device("res");
+	DirDevice* devicePtr = &device;
 
 	Window* window = GLWindow::create(900, 600, "<example>");
 	Shader* shader = GLShader::create(
@@ -32,13 +35,23 @@ int main(int argc, char **argv) {
 	window->setInputProcessor(&processor);
 	window->swapInterval(1);
 
-	size_t datalength;
-	unsigned char* bytes = device.readBytes("test.png", datalength);
-	RasterImage* image = load_png_image(bytes);
-	delete[] bytes;
 
-	Texture* texture = GLTexture::fromImage(image);
-	delete image;
+	Assets assets;
+	AssetsLoader loader;
+	loader.queue("textures/test", [devicePtr](){
+		size_t datalength;
+		unsigned char* bytes = devicePtr->readBytes("test.png", datalength);
+		RasterImage* image = load_png_image(bytes);
+		delete[] bytes;
+
+		Texture* texture = GLTexture::fromImage(image);
+		delete image;
+		return NeResource(SIMPLE, texture, [](void* ptr){delete (Texture*)ptr;});
+	});
+	loader.performAll(&assets);
+
+	Texture* texture = (Texture*)assets.get("textures/test");
+
 
 	Camera camera({0, 0, 0}, 1.0f, false);
 	InputProcessor* processorPtr = &processor;
@@ -80,7 +93,6 @@ int main(int argc, char **argv) {
 
 		window->swapBuffers();
 	}
-	delete texture;
 	delete shader;
 	delete window;
 	return 0;

@@ -1,9 +1,7 @@
 PROJECT_ROOT = $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
-DIRS = miocpp necore necore/gl necore/input necore/formats
+DIRS = miocpp necore necore/gl necore/input necore/formats necore/assets
 $(info $(shell mkdir -p $(DIRS)))
-
-BUILD_MODE = run
 
 OBJS = Nictophobia.o \
 	miocpp/iopath.o \
@@ -22,6 +20,8 @@ OBJS = Nictophobia.o \
 	necore/formats/png_format.o \
 	necore/input/InputProcessor.o \
 	necore/input/InputBinding.o \
+	necore/assets/Assets.o \
+	necore/assets/AssetsLoader.o \
 	necore/gl/GLWindow.o \
 	necore/gl/GLTexture.o \
 	necore/gl/GLShader.o \
@@ -59,6 +59,8 @@ necore/gl/%.o:	$(PROJECT_ROOT)necore/gl/%.cpp
 necore/input/%.o:	$(PROJECT_ROOT)necore/input/%.cpp
 	$(CXX) -c $(CFLAGS) $(CXXFLAGS) $(CPPFLAGS) -o $@ $<
 necore/formats/%.o:	$(PROJECT_ROOT)necore/formats/%.cpp
+	$(CXX) -c $(CFLAGS) $(CXXFLAGS) $(CPPFLAGS) -o $@ $<
+necore/assets/%.o:	$(PROJECT_ROOT)necore/assets/%.cpp
 	$(CXX) -c $(CFLAGS) $(CXXFLAGS) $(CPPFLAGS) -o $@ $<
 
 necore/%.o:	$(PROJECT_ROOT)necore/%.cpp
