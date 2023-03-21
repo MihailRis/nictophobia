@@ -24,6 +24,7 @@
 #include <glm/glm.hpp>
 
 Texture* load_texture(iopath);
+Shader* load_shader(iopath);
 
 void queueAssets(AssetsLoader* loader) {
 	loader->queue("textures/test", [](){
@@ -31,9 +32,7 @@ void queueAssets(AssetsLoader* loader) {
 		return NeResource(SIMPLE, texture, [](void* ptr){delete (Texture*)ptr;});
 	});
 	loader->queue("shaders/ui", [](){
-		Shader* shader = GLShader::create(
-				iopath("res:ui.glslv").readString(),
-				iopath("res:ui.glslf").readString());
+		Shader* shader = load_shader(iopath("res:ui"));
 		return NeResource(SIMPLE, shader, [](void* ptr){delete (Shader*)ptr;});
 	});
 }
@@ -123,4 +122,11 @@ Texture* load_texture(iopath path) {
 	Texture* texture = GLTexture::fromImage(image);
 	delete image;
 	return texture;
+}
+
+Shader* load_shader(iopath path) {
+	Shader* shader = GLShader::create(
+			path.extended(".glslv").readString(),
+			path.extended(".glslf").readString());
+	return shader;
 }

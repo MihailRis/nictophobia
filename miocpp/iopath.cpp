@@ -75,6 +75,10 @@ string iopath::nameNoExt() const {
 	}
 }
 
+iopath iopath::extended(std::string extension) const {
+	return iopath(_label, _path+extension);
+}
+
 std::string iopath::readString() const {
 	return mio::readString(this);
 }

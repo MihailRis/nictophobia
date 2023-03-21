@@ -24,6 +24,8 @@ public:
 	std::string extension() const;
 	std::string nameNoExt() const;
 
+	iopath extended(std::string extension) const;
+
 	std::string toStr() const {
 		return _label + ":" + _path;
 	}
