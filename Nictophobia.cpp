@@ -4,27 +4,23 @@
 #include "necore/Window.h"
 #include "necore/Batch2D.h"
 #include "necore/Camera.h"
-#include "necore/RasterImage.h"
 #include "necore/Texture.h"
+#include "necore/Shader.h"
 #include "necore/NeContext.h"
 #include "necore/formats/png_format.h"
 #include "necore/assets/Assets.h"
 #include "necore/assets/AssetsLoader.h"
+#include "necore/assets/assets_loading.h"
 #include "necore/input/InputProcessor.h"
 #include "necore/input/InputBinding.h"
 #include "necore/input/input_constants.h"
 #include "necore/gl/GLWindow.h"
-#include "necore/gl/GLShader.h"
 #include "necore/gl/GLMesh.h"
-#include "necore/gl/GLTexture.h"
 #include "miocpp/iopath.h"
 #include "miocpp/DirDevice.h"
 #include "miocpp/mio.h"
 
 #include <glm/glm.hpp>
-
-Texture* load_texture(iopath);
-Shader* load_shader(iopath);
 
 void queueAssets(AssetsLoader* loader) {
 	loader->queue("textures/test", [](){
@@ -54,12 +50,12 @@ void buildTheGame(NeContext* context) {
 	bindings->bind("right", [processor](){return processor->pressed(NC_KEY_D);});
 }
 
+// todo: remove
 void finishTheGame(NeContext* context) {
 	delete mio::pop_device("res");
 	delete context->window->getInputProcessor();
 	context->window->setInputProcessor(nullptr);
 }
-
 
 int main(int argc, char **argv) {
 	Window* window = GLWindow::create(900, 600, "<example>");
@@ -69,7 +65,6 @@ int main(int argc, char **argv) {
 	Batch2D batch(1024);
 	window->swapInterval(1);
 
-	Texture* texture = (Texture*)context->assets.get("textures/test");
 	Shader* shader = (Shader*)context->assets.get("shaders/ui");
 
 	Camera camera({0, 0, 0}, 1.0f, false);
@@ -94,13 +89,12 @@ int main(int argc, char **argv) {
 		window->clear();
 
 		shader->use();
-		shader->uniformMatrix("u_proj", camera.getProjection(
-				(float)w/(float)h
-		));
+		shader->uniformMatrix("u_proj", camera.getProjection((float)w/(float)h));
 		shader->uniformMatrix("u_view", camera.getView());
 
+		batch.begin(&context->assets);
+		batch.texture("textures/test");
 		batch.rect(x, y, 260, 160);
-		texture->bind();
 		batch.flush();
 
 		window->swapBuffers();
@@ -109,22 +103,4 @@ int main(int argc, char **argv) {
 	delete context;
 	delete window;
 	return 0;
-}
-
-Texture* load_texture(iopath path) {
-	size_t datalength;
-	unsigned char* bytes = path.readBytes(&datalength);
-	RasterImage* image = load_png_image(bytes);
-	delete[] bytes;
-
-	Texture* texture = GLTexture::fromImage(image);
-	delete image;
-	return texture;
-}
-
-Shader* load_shader(iopath path) {
-	Shader* shader = GLShader::create(
-			path.extended(".glslv").readString(),
-			path.extended(".glslf").readString());
-	return shader;
 }

@@ -24,6 +24,7 @@ OBJS = Nictophobia.o \
 	necore/input/InputBinding.o \
 	necore/assets/Assets.o \
 	necore/assets/AssetsLoader.o \
+	necore/assets/assets_loading.o \
 	necore/gl/GLWindow.o \
 	necore/gl/GLTexture.o \
 	necore/gl/GLShader.o \
