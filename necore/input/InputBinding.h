@@ -3,6 +3,7 @@
 
 #include <unordered_map>
 #include <functional>
+#include <string>
 
 typedef std::function<bool()> trigger_func;
 

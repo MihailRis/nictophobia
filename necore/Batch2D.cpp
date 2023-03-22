@@ -4,6 +4,9 @@
 #include "gl/GLMesh.h"
 #include "gl/GLTexture.h"
 #include "Texture.h"
+#include "Shader.h"
+#include "Window.h"
+#include "Camera.h"
 #include "RasterImage.h"
 #include "assets/Assets.h"
 
@@ -70,6 +73,23 @@ void Batch2D::begin(Assets* assets) {
 	this->assets = assets;
 	_texture = nullptr;
 	tint = {1.0f, 1.0f, 1.0f, 1.0f};
+}
+
+void Batch2D::setShader(Shader* shader) {
+	this->shader = shader;
+	shader->use();
+}
+
+void Batch2D::setShader(std::string name) {
+	Shader* shader = (Shader*)assets->get(name);
+	if (shader != nullptr) {
+		setShader(shader);
+	}
+}
+
+void Batch2D::setCamera(float ar, Camera* camera) {
+	shader->uniformMatrix("u_proj", camera->getProjection(ar));
+	shader->uniformMatrix("u_view", camera->getView());
 }
 
 void Batch2D::end() {

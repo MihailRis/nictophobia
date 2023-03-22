@@ -1,5 +1,7 @@
 #include "assets_loading.h"
 
+#include <iostream>
+
 #include "../../miocpp/mio.h"
 #include "../gl/GLTexture.h"
 #include "../gl/GLShader.h"
@@ -7,6 +9,10 @@
 #include "../RasterImage.h"
 
 Texture* load_texture(iopath path) {
+	if (!path.isFile()) {
+		std::cerr << "file "+path.toStr()+" not found" << std::endl;
+		return nullptr;
+	}
 	size_t datalength;
 	unsigned char* bytes = path.readBytes(&datalength);
 	RasterImage* image = load_png_image(bytes);

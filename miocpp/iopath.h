@@ -32,6 +32,9 @@ public:
 
 	std::string readString() const;
 	unsigned char* readBytes(size_t* size) const;
+	bool exists() const;
+	bool isFile() const;
+	bool isDir() const;
 };
 
 #endif /* MIOCPP_IOPATH_H_ */

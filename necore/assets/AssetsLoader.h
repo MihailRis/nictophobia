@@ -31,8 +31,8 @@ public:
 		return entries.size();
 	}
 
-	void performNext(Assets* assets);
-	void performAll(Assets* assets);
+	int performNext(Assets* assets);
+	int performAll(Assets* assets);
 };
 
 #endif /* NECORE_ASSETS_ASSETSLOADER_H_ */

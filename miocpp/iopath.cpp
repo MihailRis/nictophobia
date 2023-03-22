@@ -86,3 +86,15 @@ std::string iopath::readString() const {
 unsigned char* iopath::readBytes(size_t* size) const {
 	return mio::readBytes(this, size);
 }
+
+bool iopath::exists() const {
+	return mio::exists(this);
+}
+
+bool iopath::isFile() const {
+	return mio::isFile(this);
+}
+
+bool iopath::isDir() const {
+	return mio::isDir(this);
+}

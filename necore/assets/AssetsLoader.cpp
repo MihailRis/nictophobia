@@ -1,5 +1,7 @@
 #include "AssetsLoader.h"
 
+#include <iostream>
+
 AssetsLoader::AssetsLoader() {
 
 }
@@ -20,18 +22,24 @@ void AssetsLoader::queue(std::string name, resource_loader_func loader) {
 	entries.push({name, loader});
 }
 
-void AssetsLoader::performNext(Assets* assets) {
+int AssetsLoader::performNext(Assets* assets) {
 	asset_loading_entry entry = entries.front();
 	entries.pop();
+	std::cout << "assets loading: " << entry.id << std::endl;
 	NeResource resource = entry.loader();
 	if (resource.data == nullptr) {
-		return;
+		return 1;
 	}
 	assets->put(entry.id, resource);
+	return 0;
 }
 
-void AssetsLoader::performAll(Assets* assets) {
+int AssetsLoader::performAll(Assets* assets) {
 	while (countQueued()) {
-		performNext(assets);
+		int status = performNext(assets);
+		if (status) {
+			return status;
+		}
 	}
+	return 0;
 }

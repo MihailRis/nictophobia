@@ -37,3 +37,24 @@ unsigned char* mio::readBytes(const iopath* path, size_t* size) {
 	}
 	return nullptr;
 }
+
+bool mio::exists(const iopath* path) {
+	if (IODevice* device = get_device(path->label())) {
+		return device->exists(path->path());
+	}
+	return false;
+}
+
+bool mio::isFile(const iopath* path) {
+	if (IODevice* device = get_device(path->label())) {
+		return device->isFile(path->path());
+	}
+	return false;
+}
+
+bool mio::isDir(const iopath* path) {
+	if (IODevice* device = get_device(path->label())) {
+		return device->isDir(path->path());
+	}
+	return false;
+}

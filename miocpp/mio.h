@@ -21,6 +21,9 @@ namespace mio {
 
 	unsigned char* readBytes(const iopath* path, size_t* size);
 
+	bool exists(const iopath* path);
+	bool isFile(const iopath* path);
+	bool isDir(const iopath* path);
 }
 
 

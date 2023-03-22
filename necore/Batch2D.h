@@ -20,6 +20,8 @@ class Batch2D {
 	Assets* assets = nullptr;
 	Texture* _texture = nullptr;
 	Texture* _blank;
+	Shader* shader = nullptr;
+	Camera* camera = nullptr;
 
 	void vertex(float x, float y, float u, float v) {
 		vertex(x, y, u, v, tint.r, tint.g, tint.b, tint.a);
@@ -30,6 +32,12 @@ public:
 	virtual ~Batch2D();
 
 	void begin(Assets* assets);
+
+	void setShader(Shader* shader);
+
+	void setShader(std::string name);
+
+	void setCamera(float ar, Camera* camera);
 
 	void end();
 
