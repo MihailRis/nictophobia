@@ -4,12 +4,15 @@
 #include <stdlib.h>
 #include <string>
 #include <glm/glm.hpp>
+#include "uvregion.h"
 
 class Mesh;
 class Assets;
 class Texture;
 class Camera;
 class Shader;
+class Sprite;
+class Window;
 
 class Batch2D {
 	Mesh* mesh;
@@ -17,6 +20,7 @@ class Batch2D {
 	size_t capacity;
 	size_t position;
 	glm::vec4 tint {1.0f, 1.0f, 1.0f, 1.0f};
+	Window* window = nullptr;
 	Assets* assets = nullptr;
 	Texture* _texture = nullptr;
 	Texture* _blank;
@@ -31,11 +35,13 @@ public:
 	Batch2D(size_t vertices);
 	virtual ~Batch2D();
 
-	void begin(Assets* assets);
+	void begin(Window* window, Assets* assets);
 
 	void setShader(Shader* shader);
 
 	void setShader(std::string name);
+
+	void setCamera(Camera* camera);
 
 	void setCamera(float ar, Camera* camera);
 
@@ -44,6 +50,15 @@ public:
 	void color(float r, float g, float b, float a);
 
 	void rect(float x, float y, float w, float h);
+
+	void rect(float x, float y,float w, float h, float ox, float oy,
+			float angle,
+			uvregion region,
+			bool flippedX,
+			bool flippedY,
+			glm::vec4 tint);
+
+	void draw(Sprite* sprite);
 
 	void texture(Texture* texture);
 

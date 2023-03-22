@@ -15,6 +15,7 @@
 #include "necore/input/input_constants.h"
 #include "necore/gl/GLWindow.h"
 #include "necore/gl/GLMesh.h"
+#include "necore/g2d/Sprite.h"
 #include "miocpp/iopath.h"
 #include "miocpp/DirDevice.h"
 #include "miocpp/mio.h"
@@ -60,30 +61,23 @@ void finishTheGame(NeContext* context) {
 	context->window->setInputProcessor(nullptr);
 }
 
-int main(int argc, char **argv) {
-	Window* window = GLWindow::create(900, 600, "<example>");
-	NeContext* context = new NeContext(window);
-	window->swapInterval(1);
-
-	if (int status = buildTheGame(context)){
-		return status;
-	}
-
+int mainloop(Window* window, NeContext* context) {
 	Batch2D batch(1024);
+	Sprite sprite(glm::vec2(200, 200), glm::vec2(260, 160), glm::vec2(0.0f, 0.0f));
+	sprite.setTexture("textures/test");
 	Camera camera({0, 0, 0}, 1.0f, false);
-
-	float x = 200;
-	float y = 200;
-	float speed = 5.0f;
 
 	while (!window->shouldClose()) {
 		window->pollEvents();
 		context->bindings.update();
 
-		if (context->bindings.isActive("up")) {y += speed;};
-		if (context->bindings.isActive("down")) {y -= speed;};
-		if (context->bindings.isActive("left")) {x -= speed;};
-		if (context->bindings.isActive("right")) {x += speed;};
+		glm::vec2 position = sprite.getPosition();
+		float speed = 5.0f;
+		if (context->bindings.isActive("up")) {position.y += speed;};
+		if (context->bindings.isActive("down")) {position.y -= speed;};
+		if (context->bindings.isActive("left")) {position.x -= speed;};
+		if (context->bindings.isActive("right")) {position.x += speed;};
+		sprite.setPosition(position);
 
 		// draw part
 		int w = window->getWidth();
@@ -92,16 +86,28 @@ int main(int argc, char **argv) {
 		camera.setFov(h);
 
 		window->clear();
-		batch.begin(&context->assets);
+		batch.begin(window, &context->assets);
 		batch.setShader("shaders/ui");
-		batch.setCamera((float)w/(float)h, &camera);
-		batch.texture("textures/test");
-		batch.rect(x, y, 260, 160);
-		batch.flush();
+		batch.setCamera(&camera);
+		batch.draw(&sprite);
+		batch.end();
 
 		window->swapBuffers();
 	}
 	finishTheGame(context);
+	return 0;
+}
+
+int main(int argc, char **argv) {
+	Window* window = GLWindow::create(900, 600, "<example>");
+	NeContext* context = new NeContext(window);
+	window->swapInterval(1);
+
+	if (int status = buildTheGame(context)){
+		return status;
+	}
+	mainloop(window, context);
+
 	delete context;
 	delete window;
 	return 0;
