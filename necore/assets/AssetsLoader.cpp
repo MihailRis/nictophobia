@@ -25,7 +25,7 @@ void AssetsLoader::queue(std::string name, resource_loader_func loader) {
 int AssetsLoader::performNext(Assets* assets) {
 	asset_loading_entry entry = entries.front();
 	entries.pop();
-	std::cout << "assets loading: " << entry.id << std::endl;
+	std::cout << "  loading " << entry.id << std::endl;
 	NeResource resource = entry.loader();
 	if (resource.data == nullptr) {
 		return 1;
@@ -35,6 +35,7 @@ int AssetsLoader::performNext(Assets* assets) {
 }
 
 int AssetsLoader::performAll(Assets* assets) {
+	std::cout << "loading all queued assets" << std::endl;
 	while (countQueued()) {
 		int status = performNext(assets);
 		if (status) {

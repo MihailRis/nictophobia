@@ -15,7 +15,6 @@
 #include "necore/input/input_constants.h"
 #include "necore/gl/GLWindow.h"
 #include "necore/gl/GLMesh.h"
-#include "necore/g2d/Sprite.h"
 #include "necore/stage/Stage.h"
 #include "necore/stage/Object.h"
 #include "miocpp/iopath.h"
@@ -50,9 +49,7 @@ int buildTheGame(NeContext* context) {
 	std::cout << "assets loaded successfully" << std::endl;
 
 	// setting up input
-	InputProcessor* processor = new InputProcessor();
-	context->window->setInputProcessor(processor);
-
+	InputProcessor* processor = context->window->getInputProcessor();
 	InputBindings<std::string>* bindings = &context->bindings;
 	bindings->bind("up", [processor](){return processor->pressed(NC_KEY_W) || processor->pressed(NC_KEY_UP);});
 	bindings->bind("down", [processor](){return processor->pressed(NC_KEY_S) || processor->pressed(NC_KEY_DOWN);});
@@ -63,7 +60,7 @@ int buildTheGame(NeContext* context) {
 	Stage* stage = new Stage(new Camera({0, 0, 0}, 600.0f, false));
 	context->stage = stage;
 
-	Object* object = new Object(glm::vec3(200, 200, 0));
+	Object* object = new Object({200, 200, 0});
 	object->callback = [](NeContext* context, Object* object) {
 		glm::vec2 motion {0.0f, 0.0f};
 		float speed = 5.0f;
@@ -87,15 +84,12 @@ int buildTheGame(NeContext* context) {
 void finishTheGame(NeContext* context) {
 	delete mio::pop_device("res");
 	delete context->stage;
-	delete context->window->getInputProcessor();
-	context->window->setInputProcessor(nullptr);
 }
 
 int main(int argc, char* argv[]) {
 	Window* window = GLWindow::create(900, 600, "<example>");
 	NeContext* context = new NeContext(window);
 	Necore core;
-	window->swapInterval(1);
 
 	if (int status = buildTheGame(context)){
 		return status;

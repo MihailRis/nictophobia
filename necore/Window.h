@@ -7,6 +7,7 @@ class Window {
 protected:
 	InputProcessor* processor = nullptr;
 public:
+	Window();
 	virtual ~Window();
 
 	virtual bool shouldClose() = 0;

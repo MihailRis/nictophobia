@@ -124,6 +124,8 @@ Window* GLWindow::create(int width, int height, const char* title) {
 	glfwSetWindowSizeCallback(window, window_size_callback);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
+	glfwSwapInterval(1);
+
 	GLWindow* wrapper = new GLWindow(window, width, height);
 	GLWindow::wrappers[window] = wrapper;
 	return wrapper;
