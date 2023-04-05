@@ -22,6 +22,7 @@
 #include "miocpp/DirDevice.h"
 #include "miocpp/mio.h"
 #include "necore/Necore.h"
+#include "necore/colors.h"
 
 
 void queueAssets(AssetsLoader* loader) {
@@ -64,7 +65,7 @@ int buildTheGame(NeContext* context) {
 
 	Object* object = new Object(glm::vec3(200, 200, 0));
 	object->callback = [](NeContext* context, Object* object) {
-		glm::vec2 motion;
+		glm::vec2 motion {0.0f, 0.0f};
 		float speed = 5.0f;
 		if (context->bindings.isActive("up")) {motion.y += speed;};
 		if (context->bindings.isActive("down")) {motion.y -= speed;};
@@ -75,7 +76,7 @@ int buildTheGame(NeContext* context) {
 	object->draw2d = [](NeContext* context, Batch2D* batch, Object* object) {
 		glm::vec3 position = object->getPosition();
 		batch->texture("textures/test");
-		batch->rect(position.x, position.y, 260, 160, 0.5f, 0.5f, 0, uvregion(), false, false, glm::vec4(1.0f,1.0f,1.0f,1.0f));
+		batch->rect(position.x, position.y, 260, 160, 0.5f, 0.5f, 0, uvregion(), false, false, COLOR_WHITE);
 	};
 	stage->add(object);
 
