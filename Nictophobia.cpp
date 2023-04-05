@@ -14,12 +14,9 @@
 #include "necore/input/InputProcessor.h"
 #include "necore/input/InputBinding.h"
 #include "necore/input/input_constants.h"
-#include "necore/gl/GLWindow.h"
-#include "necore/gl/GLMesh.h"
 #include "necore/stage/Stage.h"
 #include "necore/stage/Object.h"
 #include "miocpp/iopath.h"
-#include "miocpp/mio.h"
 #include "necore/Necore.h"
 #include "necore/colors.h"
 #include "necore/version.h"
@@ -71,14 +68,16 @@ int buildTheGame(NeContext* context) {
 }
 
 void finishTheGame(NeContext* context) {
-	delete mio::pop_device("res");
 	delete context->stage;
 }
 
 int main(int argc, char* argv[]) {
 	Necore core;
-	const char* title = "<nictophobia " NE_VERSION_STRING "> built at " NE_BUILD_DATE;
-	if (int status = core.run(queueAssets, buildTheGame, finishTheGame, title)) {
+	NeGameProject project {"test project"};
+	project.assets_ask = queueAssets;
+	project.build_game = buildTheGame;
+	project.destruct_game = finishTheGame;
+	if (int status = core.run(&project)) {
 		return status;
 	}
 	return 0;

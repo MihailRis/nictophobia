@@ -18,31 +18,33 @@ Necore::~Necore() {
 
 }
 
-int Necore::run(assets_asker_func assets_ask,
-		build_game_func build_game,
-		destruct_game_func destruct_game,
-		const char* window_title) {
-	// setting up filesystem
+inline std::string build_title(std::string name) {
+	return name + " [nictophobia v" + NE_VERSION_STRING + " (" + __DATE__ + " " + __TIME__ + ")]";
+}
+
+int Necore::run(NeGameProject* project) {
 	mio::add_device("res", new DirDevice("res"));
 
-	Window* window = GLWindow::create(900, 600, window_title);
+	std::string title = build_title(project->name);
+	Window* window = GLWindow::create(900, 600, title.c_str());
 	NeContext* context = new NeContext(window);
 
 
 	// loading assets
 	AssetsLoader loader;
-	assets_ask(&loader);
+	project->assets_ask(&loader);
 	if (int status = loader.performAll(&context->assets)) {
 		std::cerr << "fatal error: could not to load assets" << std::endl;
 		return status;
 	}
 
-	if (int status = build_game(context)){
+	if (int status = project->build_game(context)){
 		return status;
 	}
 	mainloop(context);
-	destruct_game(context);
 
+	project->destruct_game(context);
+	delete mio::pop_device("res");
 	delete context;
 	delete window;
 	return 0;
