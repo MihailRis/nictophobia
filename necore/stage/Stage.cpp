@@ -3,12 +3,17 @@
 #include "../g2d/Sprite.h"
 #include "Object.h"
 
+#include "../Camera.h"
 #include "../Batch2D.h"
 
 
 Stage::Stage(Camera* camera) : camera(camera) {}
 
 Stage::~Stage() {
+	for (Object* object : objects) {
+		delete object;
+	}
+	delete camera;
 }
 
 Object* Stage::get(int index) {
