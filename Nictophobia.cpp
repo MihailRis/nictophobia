@@ -26,10 +26,6 @@ void queueAssets(AssetsLoader* loader) {
 		Texture* texture = load_texture(iopath("res:test.png"));
 		return NeResource(SIMPLE, texture, [](void* ptr){delete (Texture*)ptr;});
 	});
-	loader->queue("shaders/ui", [](){
-		Shader* shader = load_shader(iopath("res:ui"));
-		return NeResource(SIMPLE, shader, [](void* ptr){delete (Shader*)ptr;});
-	});
 }
 
 int buildTheGame(NeContext* context) {

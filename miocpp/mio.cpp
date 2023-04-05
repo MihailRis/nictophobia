@@ -6,22 +6,23 @@ void mio::add_device(std::string label, IODevice* device) {
 }
 
 IODevice* mio::get_device(std::string label) {
-	IODevice* device = devices[label];
-	if (device == nullptr) {
+	auto found = devices.find(label);
+	if (found == devices.end()) {
 		std::cerr << "no device '" << label << "' found" << std::endl;
 	}
-	return device;
+	return found->second;
 }
 
 IODevice* mio::pop_device(std::string label) {
-	IODevice* device = devices[label];
-	if (device == nullptr) {
+	auto found = devices.find(label);
+	if (found == devices.end()) {
 		std::cerr << "no device '" << label << "' found" << std::endl;
 	} else {
-		auto iter = devices.find(label);
-		devices.erase(iter);
+		IODevice* device = found->second;
+		devices.erase(found);
+		return device;
 	}
-	return device;
+	return nullptr;
 }
 
 std::string mio::readString(const iopath* path) {
