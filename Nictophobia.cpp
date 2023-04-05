@@ -54,7 +54,7 @@ int buildTheGame(NeContext* context) {
 	bindings->bind("left", [processor](){return processor->pressed(NC_KEY_A) || processor->pressed(NC_KEY_LEFT);});
 	bindings->bind("right", [processor](){return processor->pressed(NC_KEY_D) || processor->pressed(NC_KEY_RIGHT);});
 
-	Stage* stage = new Stage();
+	Stage* stage = new Stage(new Camera({0, 0, 0}, 600.0f, false));
 	Sprite* sprite = new Sprite(glm::vec2(200, 200), glm::vec2(260, 160), glm::vec2(0.0f, 0.0f));
 	sprite->setTexture("textures/test");
 
@@ -84,30 +84,17 @@ void finishTheGame(NeContext* context) {
 
 int mainloop(Window* window, NeContext* context) {
 	Batch2D batch(1024);
-	Camera camera({0, 0, 0}, 1.0f, false);
 
 	while (!window->shouldClose()) {
 		window->pollEvents();
 		context->bindings.update();
 
-		Object* object = context->stage->get(0);
-		Sprite* sprite = object->sprite;
-
-		if (object->callback) {
-			object->callback(context, object);
-		}
-
-		// draw part
-		int w = window->getWidth();
-		int h = window->getHeight();
-
-		camera.setFov(h);
+		context->stage->act(context);
 
 		window->clear();
 		batch.begin(window, &context->assets);
 		batch.setShader("shaders/ui");
-		batch.setCamera(&camera);
-		batch.draw(sprite);
+		context->stage->draw(context, &batch);
 		batch.end();
 
 		window->swapBuffers();
