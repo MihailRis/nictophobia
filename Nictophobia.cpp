@@ -1,4 +1,5 @@
 #include <iostream>
+#include <functional>
 #include <glm/glm.hpp>
 #include "necore/Window.h"
 #include "necore/Batch2D.h"
@@ -18,11 +19,10 @@
 #include "necore/stage/Stage.h"
 #include "necore/stage/Object.h"
 #include "miocpp/iopath.h"
-#include "miocpp/DirDevice.h"
 #include "miocpp/mio.h"
 #include "necore/Necore.h"
 #include "necore/colors.h"
-
+#include "necore/version.h"
 
 void queueAssets(AssetsLoader* loader) {
 	loader->queue("textures/test", [](){
@@ -36,16 +36,6 @@ void queueAssets(AssetsLoader* loader) {
 }
 
 int buildTheGame(NeContext* context) {
-	// setting up filesystem
-	mio::add_device("res", new DirDevice("res"));
-
-	// loading assets
-	AssetsLoader loader;
-	queueAssets(&loader);
-	if (int status = loader.performAll(&context->assets)) {
-		std::cerr << "fatal error: could not to load assets" << std::endl;
-		return status;
-	}
 	std::cout << "assets loaded successfully" << std::endl;
 
 	// setting up input
@@ -80,24 +70,16 @@ int buildTheGame(NeContext* context) {
 	return 0;
 }
 
-// todo: remove
 void finishTheGame(NeContext* context) {
 	delete mio::pop_device("res");
 	delete context->stage;
 }
 
 int main(int argc, char* argv[]) {
-	Window* window = GLWindow::create(900, 600, "<example>");
-	NeContext* context = new NeContext(window);
 	Necore core;
-
-	if (int status = buildTheGame(context)){
+	const char* title = "<nictophobia " NE_VERSION_STRING "> built at " NE_BUILD_DATE;
+	if (int status = core.run(queueAssets, buildTheGame, finishTheGame, title)) {
 		return status;
 	}
-	core.mainloop(context);
-	finishTheGame(context);
-
-	delete context;
-	delete window;
 	return 0;
 }
