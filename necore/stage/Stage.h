@@ -2,6 +2,7 @@
 #define NECORE_STAGE_STAGE_H_
 
 #include <vector>
+#include <functional>
 
 class Object;
 class NeContext;

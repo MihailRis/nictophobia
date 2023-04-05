@@ -36,8 +36,10 @@ void queueAssets(AssetsLoader* loader) {
 }
 
 int buildTheGame(NeContext* context) {
+	// setting up filesystem
 	mio::add_device("res", new DirDevice("res"));
 
+	// loading assets
 	AssetsLoader loader;
 	queueAssets(&loader);
 	if (int status = loader.performAll(&context->assets)) {
@@ -46,6 +48,7 @@ int buildTheGame(NeContext* context) {
 	}
 	std::cout << "assets loaded successfully" << std::endl;
 
+	// setting up input
 	InputProcessor* processor = new InputProcessor();
 	context->window->setInputProcessor(processor);
 
@@ -55,23 +58,26 @@ int buildTheGame(NeContext* context) {
 	bindings->bind("left", [processor](){return processor->pressed(NC_KEY_A) || processor->pressed(NC_KEY_LEFT);});
 	bindings->bind("right", [processor](){return processor->pressed(NC_KEY_D) || processor->pressed(NC_KEY_RIGHT);});
 
+	// setting up stage
 	Stage* stage = new Stage(new Camera({0, 0, 0}, 600.0f, false));
-	Sprite* sprite = new Sprite(glm::vec2(200, 200), glm::vec2(260, 160), glm::vec2(0.0f, 0.0f));
-	sprite->setTexture("textures/test");
+	context->stage = stage;
 
-	Object* object = new Object(sprite);
+	Object* object = new Object(glm::vec3(200, 200, 0));
 	object->callback = [](NeContext* context, Object* object) {
-		Sprite* sprite = object->sprite;
-		glm::vec2 position = sprite->getPosition();
+		glm::vec2 motion;
 		float speed = 5.0f;
-		if (context->bindings.isActive("up")) {position.y += speed;};
-		if (context->bindings.isActive("down")) {position.y -= speed;};
-		if (context->bindings.isActive("left")) {position.x -= speed;};
-		if (context->bindings.isActive("right")) {position.x += speed;};
-		sprite->setPosition(position);
+		if (context->bindings.isActive("up")) {motion.y += speed;};
+		if (context->bindings.isActive("down")) {motion.y -= speed;};
+		if (context->bindings.isActive("left")) {motion.x -= speed;};
+		if (context->bindings.isActive("right")) {motion.x += speed;};
+		object->translate(motion.x, motion.y, 0.0f);
+	};
+	object->draw2d = [](NeContext* context, Batch2D* batch, Object* object) {
+		glm::vec3 position = object->getPosition();
+		batch->texture("textures/test");
+		batch->rect(position.x, position.y, 260, 160, 0.5f, 0.5f, 0, uvregion(), false, false, glm::vec4(1.0f,1.0f,1.0f,1.0f));
 	};
 	stage->add(object);
-	context->stage = stage;
 
 	return 0;
 }
@@ -79,11 +85,12 @@ int buildTheGame(NeContext* context) {
 // todo: remove
 void finishTheGame(NeContext* context) {
 	delete mio::pop_device("res");
+	delete context->stage;
 	delete context->window->getInputProcessor();
 	context->window->setInputProcessor(nullptr);
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char* argv[]) {
 	Window* window = GLWindow::create(900, 600, "<example>");
 	NeContext* context = new NeContext(window);
 	Necore core;

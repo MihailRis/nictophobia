@@ -30,6 +30,8 @@ void Stage::act(NeContext* context) {
 void Stage::draw(NeContext* context, Batch2D* batch) {
 	batch->setCamera(camera);
 	for (Object* object : objects) {
-		batch->draw(object->sprite);
+		if (object->draw2d) {
+			object->draw2d(context, batch, object);
+		}
 	}
 }
