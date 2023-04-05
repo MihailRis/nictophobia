@@ -19,6 +19,7 @@ OBJS = Nictophobia.o \
 	necore/Camera.o \
 	necore/RasterImage.o \
 	necore/NeContext.o \
+	necore/Necore.o \
 	necore/formats/png_format.o \
 	necore/input/InputProcessor.o \
 	necore/input/InputBinding.o \

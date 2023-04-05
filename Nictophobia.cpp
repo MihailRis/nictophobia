@@ -21,6 +21,7 @@
 #include "miocpp/iopath.h"
 #include "miocpp/DirDevice.h"
 #include "miocpp/mio.h"
+#include "necore/Necore.h"
 
 
 void queueAssets(AssetsLoader* loader) {
@@ -82,36 +83,17 @@ void finishTheGame(NeContext* context) {
 	context->window->setInputProcessor(nullptr);
 }
 
-int mainloop(Window* window, NeContext* context) {
-	Batch2D batch(1024);
-
-	while (!window->shouldClose()) {
-		window->pollEvents();
-		context->bindings.update();
-
-		context->stage->act(context);
-
-		window->clear();
-		batch.begin(window, &context->assets);
-		batch.setShader("shaders/ui");
-		context->stage->draw(context, &batch);
-		batch.end();
-
-		window->swapBuffers();
-	}
-	finishTheGame(context);
-	return 0;
-}
-
 int main(int argc, char **argv) {
 	Window* window = GLWindow::create(900, 600, "<example>");
 	NeContext* context = new NeContext(window);
+	Necore core;
 	window->swapInterval(1);
 
 	if (int status = buildTheGame(context)){
 		return status;
 	}
-	mainloop(window, context);
+	core.mainloop(context);
+	finishTheGame(context);
 
 	delete context;
 	delete window;
