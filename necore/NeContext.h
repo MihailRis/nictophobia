@@ -6,6 +6,7 @@
 #include "input/InputBinding.h"
 
 class Window;
+class Stage;
 
 class NeContext {
 public:
@@ -13,6 +14,7 @@ public:
 	Assets assets;
 	std::vector<assets_asker_func> askers;
 	InputBindings<std::string> bindings;
+	Stage* stage = nullptr;
 
 	NeContext(Window* window);
 	virtual ~NeContext();

@@ -16,6 +16,8 @@
 #include "necore/gl/GLWindow.h"
 #include "necore/gl/GLMesh.h"
 #include "necore/g2d/Sprite.h"
+#include "necore/stage/Stage.h"
+#include "necore/stage/Object.h"
 #include "miocpp/iopath.h"
 #include "miocpp/DirDevice.h"
 #include "miocpp/mio.h"
@@ -47,10 +49,29 @@ int buildTheGame(NeContext* context) {
 	context->window->setInputProcessor(processor);
 
 	InputBindings<std::string>* bindings = &context->bindings;
-	bindings->bind("up", [processor](){return processor->pressed(NC_KEY_W);});
-	bindings->bind("down", [processor](){return processor->pressed(NC_KEY_S);});
-	bindings->bind("left", [processor](){return processor->pressed(NC_KEY_A);});
-	bindings->bind("right", [processor](){return processor->pressed(NC_KEY_D);});
+	bindings->bind("up", [processor](){return processor->pressed(NC_KEY_W) || processor->pressed(NC_KEY_UP);});
+	bindings->bind("down", [processor](){return processor->pressed(NC_KEY_S) || processor->pressed(NC_KEY_DOWN);});
+	bindings->bind("left", [processor](){return processor->pressed(NC_KEY_A) || processor->pressed(NC_KEY_LEFT);});
+	bindings->bind("right", [processor](){return processor->pressed(NC_KEY_D) || processor->pressed(NC_KEY_RIGHT);});
+
+	Stage* stage = new Stage();
+	Sprite* sprite = new Sprite(glm::vec2(200, 200), glm::vec2(260, 160), glm::vec2(0.0f, 0.0f));
+	sprite->setTexture("textures/test");
+
+	Object* object = new Object(sprite);
+	object->callback = [](NeContext* context, Object* object) {
+		Sprite* sprite = object->sprite;
+		glm::vec2 position = sprite->getPosition();
+		float speed = 5.0f;
+		if (context->bindings.isActive("up")) {position.y += speed;};
+		if (context->bindings.isActive("down")) {position.y -= speed;};
+		if (context->bindings.isActive("left")) {position.x -= speed;};
+		if (context->bindings.isActive("right")) {position.x += speed;};
+		sprite->setPosition(position);
+	};
+	stage->add(object);
+	context->stage = stage;
+
 	return 0;
 }
 
@@ -63,21 +84,18 @@ void finishTheGame(NeContext* context) {
 
 int mainloop(Window* window, NeContext* context) {
 	Batch2D batch(1024);
-	Sprite sprite(glm::vec2(200, 200), glm::vec2(260, 160), glm::vec2(0.0f, 0.0f));
-	sprite.setTexture("textures/test");
 	Camera camera({0, 0, 0}, 1.0f, false);
 
 	while (!window->shouldClose()) {
 		window->pollEvents();
 		context->bindings.update();
 
-		glm::vec2 position = sprite.getPosition();
-		float speed = 5.0f;
-		if (context->bindings.isActive("up")) {position.y += speed;};
-		if (context->bindings.isActive("down")) {position.y -= speed;};
-		if (context->bindings.isActive("left")) {position.x -= speed;};
-		if (context->bindings.isActive("right")) {position.x += speed;};
-		sprite.setPosition(position);
+		Object* object = context->stage->get(0);
+		Sprite* sprite = object->sprite;
+
+		if (object->callback) {
+			object->callback(context, object);
+		}
 
 		// draw part
 		int w = window->getWidth();
@@ -89,7 +107,7 @@ int mainloop(Window* window, NeContext* context) {
 		batch.begin(window, &context->assets);
 		batch.setShader("shaders/ui");
 		batch.setCamera(&camera);
-		batch.draw(&sprite);
+		batch.draw(sprite);
 		batch.end();
 
 		window->swapBuffers();
