@@ -35,5 +35,5 @@ modifiers:
 - `^#hex_color_code` - set color
   
    examples: 
-   - `^#FF0000this text is red^c` ->  	$${\color{red}Red}$$
-   - ``
+   - `^#FF0000this text is red^c`
+   - `^#FFFFFF80this text is white with 50% opacity^c`
