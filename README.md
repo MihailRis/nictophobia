@@ -37,4 +37,4 @@ modifiers:
    examples: 
    - `^#FF0000this text is red^c`
    - `^#FFFFFF80this text is white with 50% opacity^c`
-   - `^#FF8000^ 512^c` - way to separate modifier from text digits
+   - `^1#FF8000^ 024^c` - way to separate modifier from text digits (will output `1024` without spaces)
