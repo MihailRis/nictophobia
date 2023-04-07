@@ -32,6 +32,8 @@ modifiers:
 - `^b` - toggle bold mode
 - `^c` - reset color to initial
 - `^r` - reset formatting
+- `^w` - text waving effect
+- `^s` - text shaking effect
 - `^#hex_color_code` - set color
   
    examples: 
