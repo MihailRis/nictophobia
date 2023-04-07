@@ -1,4 +1,5 @@
 # nictophobia
+## Basic information
 Small C++ game-engine (2D and minimal 3D) (GL+GLFW+AL+glm)
 
 - **status**: in-development
@@ -10,7 +11,7 @@ Project also contain subprojects:
 - necore - nictophobia engine itself
 - nictoscript [in-development]
 
-Build (Linux):
+## Build (Linux):
 
 ```shell
 mkdir build
@@ -21,3 +22,18 @@ make -f ../Makefile BUILD_MODE=run
 # then run
 ./Nictophobia
 ```
+
+## Text formatting
+`^` character used as prefix for formatting modifiers.
+
+example: draw bold text with `^btext that must be bold^b`
+
+modifiers:
+- `^b` - toggle bold mode
+- `^c` - reset color to initial
+- `^r` - reset formatting
+- `^#hex_color_code` - set color
+  
+   examples: 
+   - `^#FF0000this text is red^c` ->  	$${\color{red}Red}$$
+   - ``
