@@ -15,6 +15,7 @@ OBJS = Nictophobia.o \
 	necore/Texture.o \
 	necore/Shader.o \
 	necore/Mesh.o \
+	necore/Font.o \
 	necore/Batch2D.o \
 	necore/Camera.o \
 	necore/RasterImage.o \

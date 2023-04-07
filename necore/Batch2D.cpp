@@ -7,6 +7,7 @@
 #include "Shader.h"
 #include "Window.h"
 #include "Camera.h"
+#include "Font.h"
 #include "RasterImage.h"
 #include "assets/Assets.h"
 #include "g2d/Sprite.h"
@@ -183,6 +184,90 @@ void Batch2D::draw(Sprite* sprite) {
 		sprite->flippedX,
 		sprite->flippedY,
 		sprite->getColor());
+}
+
+inline bool ishex(int c) {
+	return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F');
+}
+
+inline int hextoint(int c) {
+	if (c >= '0' && c <= '9')
+		return c - '0';
+	if (c >= 'a' && c <= 'f')
+		return c - 'a' + 10;
+	if (c >= 'A' && c <= 'F')
+		return c - 'A' + 10;
+	return -1;
+}
+
+void Batch2D::drawText(std::string fontName, std::wstring text, float x, float y, bool format, bool yup) {
+	Font* font = (Font*)assets->get(fontName);
+	float initx = x;
+	float inity = y;
+	int fontSize = font->getSize();
+	uvregion region;
+
+	glm::vec4 initcolor = tint;
+
+	bool bold = false;
+	for (int i = 0 ; i < text.length(); i++) {
+		wchar_t c = text[i];
+		if (format && c == '^' && i + 1 < text.length()) {
+			wchar_t next = text[++i];
+			switch (next) {
+			case 'b':
+				bold=!bold;
+				break;
+			case '#': {
+				unsigned long long colorcode = 0;
+				int idx = 0;
+				while (i+2 < text.length() && ishex(text[i+2]) && ishex(text[i+1])) {
+					colorcode += hextoint(c = text[++i]) << (idx+4);
+					colorcode += hextoint(c = text[++i]) << idx;
+					idx += 8;
+				}
+				unsigned char* rgba = (unsigned char*)(&colorcode);
+				tint.r = rgba[0] / 255.0f;
+				tint.g = rgba[1] / 255.0f;
+				tint.b = rgba[2] / 255.0f;
+				if (idx > 24) {
+					tint.a = rgba[3] / 255.0f;
+				}
+				break;
+			}
+			case 'r':
+				bold = false;
+				tint = initcolor;
+				break;
+			case 'c':
+				tint = initcolor;
+				break;
+			}
+			continue;
+		}
+		if (font->isPrintable(c)) {
+			glyph* charglyph = font->getGlyph(c);
+			if (charglyph == nullptr) {
+				untexture();
+				region = uvregion();
+			} else {
+				texture(charglyph->texture);
+				region = charglyph->region;
+			}
+			rect(x, y, fontSize, fontSize, 0, 0, 0, region, false, !yup, tint);
+			if (bold) {
+				rect(x+2, y, fontSize, fontSize, 0, 0, 0, region, false, !yup, tint);
+			}
+			x += charglyph->advance * (bold ? 1.16 : 1);
+		} else if (c == '\n') {
+			x = initx;
+			y += fontSize * 1.5 * (yup ? -1 : 1);
+		} else if (c == '\t') {
+			x += fontSize * 2;
+		} else {
+			x += fontSize / 2;
+		}
+	}
 }
 
 void Batch2D::begin(Window* window, Assets* assets) {

@@ -37,7 +37,7 @@ inline std::string build_title(std::string name) {
 }
 
 int Necore::run(NeGameProject* project) {
-	mio::add_device("def", new DirDevice("res"));
+	mio::add_device("def", new DirDevice("res")); // it's not a mistake
 	mio::add_device("res", new DirDevice("res"));
 
 	std::string title = build_title(project->name);

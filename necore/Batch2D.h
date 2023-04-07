@@ -7,6 +7,7 @@
 #include "uvregion.h"
 
 class Mesh;
+class Font;
 class Assets;
 class Texture;
 class Camera;
@@ -59,6 +60,8 @@ public:
 			glm::vec4 tint);
 
 	void draw(Sprite* sprite);
+
+	void drawText(std::string fontName, std::wstring text, float x, float y, bool format, bool yap);
 
 	void texture(Texture* texture);
 

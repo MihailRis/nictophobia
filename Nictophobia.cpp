@@ -20,10 +20,11 @@
 #include "necore/Necore.h"
 #include "necore/colors.h"
 #include "necore/version.h"
+#include "necore/Font.h"
 
 void queueAssets(AssetsLoader* loader) {
-	loader->queue("textures/test", [](){
-		Texture* texture = load_texture(iopath("res:test.png"));
+	loader->queue("textures/font", [](){
+		Texture* texture = load_texture(iopath("res:font.png"));
 		return NeResource(SIMPLE, texture, [](void* ptr){delete (Texture*)ptr;});
 	});
 }
@@ -53,10 +54,17 @@ int buildTheGame(NeContext* context) {
 		if (context->bindings.isActive("right")) {motion.x += speed;};
 		object->translate(motion.x, motion.y, 0.0f);
 	};
+	std::vector<Texture*> pages;
+	pages.push_back((Texture*)context->assets.get("textures/font"));
+	std::unordered_map<wchar_t, int> advances;
+	advances['i'] = 40; advances['t'] = 60;
+	advances['l'] = 40;
+	BitmapFont* font = new BitmapFont(16, pages, advances);
+	context->assets.put("fonts/font", NeResource(SIMPLE, font, [](void* ptr){delete (BitmapFont*)ptr;}));
+
 	object->draw2d = [](NeContext* context, Batch2D* batch, Object* object) {
 		glm::vec3 position = object->getPosition();
-		batch->texture("textures/test");
-		batch->rect(position.x, position.y, 260, 160, 0.5f, 0.5f, 0, uvregion(), false, false, COLOR_WHITE);
+		batch->drawText("fonts/font", L"if ^b^#FF0000true^c^b {\n\tdo ^bsmth^b;\n}", 10, 100, true, true);
 	};
 	stage->add(object);
 

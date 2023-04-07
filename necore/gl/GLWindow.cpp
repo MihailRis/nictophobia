@@ -124,6 +124,9 @@ Window* GLWindow::create(int width, int height, const char* title) {
 	glfwSetWindowSizeCallback(window, window_size_callback);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	glfwSwapInterval(1);
 
 	GLWindow* wrapper = new GLWindow(window, width, height);
