@@ -61,7 +61,7 @@ public:
 
 	void draw(Sprite* sprite);
 
-	void drawText(std::string fontName, std::wstring text, float x, float y, bool format, bool yap);
+	void drawText(std::string fontName, std::wstring text, float x, float y, bool format, bool yap, float timer);
 
 	void texture(Texture* texture);
 

@@ -200,7 +200,7 @@ inline int hextoint(int c) {
 	return -1;
 }
 
-void Batch2D::drawText(std::string fontName, std::wstring text, float x, float y, bool format, bool yup) {
+void Batch2D::drawText(std::string fontName, std::wstring text, float x, float y, bool format, bool yup, float timer) {
 	Font* font = (Font*)assets->get(fontName);
 	float initx = x;
 	float inity = y;
@@ -210,6 +210,8 @@ void Batch2D::drawText(std::string fontName, std::wstring text, float x, float y
 	glm::vec4 initcolor = tint;
 
 	bool bold = false;
+	bool wave = false;
+	bool shake = false;
 	for (int i = 0 ; i < text.length(); i++) {
 		wchar_t c = text[i];
 		if (format && c == '^' && i + 1 < text.length()) {
@@ -217,6 +219,8 @@ void Batch2D::drawText(std::string fontName, std::wstring text, float x, float y
 			switch (next) {
 			case 'b':
 				bold=!bold;
+				break;
+			case ' ':
 				break;
 			case '#': {
 				unsigned long long colorcode = 0;
@@ -235,8 +239,15 @@ void Batch2D::drawText(std::string fontName, std::wstring text, float x, float y
 				}
 				break;
 			}
+			case 'w':
+				wave=!wave;
+				break;
+			case 's':
+				shake=!shake;
+				break;
 			case 'r':
 				bold = false;
+				wave = false;
 				tint = initcolor;
 				break;
 			case 'c':
@@ -254,9 +265,20 @@ void Batch2D::drawText(std::string fontName, std::wstring text, float x, float y
 				texture(charglyph->texture);
 				region = charglyph->region;
 			}
-			rect(x, y, fontSize, fontSize, 0, 0, 0, region, false, !yup, tint);
+			float lx = x;
+			float ly = y;
+			if (wave) {
+				ly += (int)(sin(timer * 5 + i) * fontSize * 0.1f);
+			}
+			if (shake) {
+				int tm = (int)(timer * 16);
+				lx += ((tm + i * 11) * 37) % (int)(fontSize * 0.15) - fontSize*0.075;
+				ly += ((tm + i * 37) ^ 9419) % (int)(fontSize * 0.2) - fontSize*0.1;
+			}
+
+			rect(lx, ly, fontSize, fontSize, 0, 0, 0, region, false, !yup, tint);
 			if (bold) {
-				rect(x+2, y, fontSize, fontSize, 0, 0, 0, region, false, !yup, tint);
+				rect(lx+2, ly, fontSize, fontSize, 0, 0, 0, region, false, !yup, tint);
 			}
 			x += charglyph->advance * (bold ? 1.16 : 1);
 		} else if (c == '\n') {

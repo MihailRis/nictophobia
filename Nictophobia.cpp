@@ -64,7 +64,7 @@ int buildTheGame(NeContext* context) {
 
 	object->draw2d = [](NeContext* context, Batch2D* batch, Object* object) {
 		glm::vec3 position = object->getPosition();
-		batch->drawText("fonts/font", L"if ^b^#FF0000true^c^b {\n\tdo ^bsmth^b;\n}", 10, 100, true, true);
+		batch->drawText("fonts/font", L"if ^b^#BADBED^ true^c^b {\n\tdo ^s^ unable to do smth i don't know^s;\n}", 10, 100, true, true, context->timer / 1000.0f);
 	};
 	stage->add(object);
 

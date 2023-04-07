@@ -15,6 +15,7 @@ public:
 	std::vector<assets_asker_func> askers;
 	InputBindings<std::string> bindings;
 	Stage* stage = nullptr;
+	unsigned long long timer = 0;
 
 	NeContext(Window* window);
 	virtual ~NeContext();

@@ -72,6 +72,7 @@ void Necore::mainloop(NeContext* context) {
 	Batch2D batch(1024);
 
 	while (!window->shouldClose()) {
+		context->timer += 16;
 		window->pollEvents();
 		context->bindings.update();
 
