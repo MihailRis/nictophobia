@@ -40,6 +40,7 @@ FreeTypeFont* FreeTypeFontLoader::create(iopath path, int font_size) {
 		  delete[] bytes;
 		  return nullptr;
 		}
+		// bytes are used until FT_Done_Face call
 	}
 
 	int error = FT_Set_Char_Size( face, font_size * 64, 0,

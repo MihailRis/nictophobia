@@ -35,8 +35,6 @@ void queueAssets(AssetsLoader* loader) {
 }
 
 int buildTheGame(NeContext* context) {
-	std::cout << "assets loaded successfully" << std::endl;
-
 	// setting up input
 	InputProcessor* processor = context->window->getInputProcessor();
 	InputBindings<std::string>* bindings = &context->bindings;
@@ -75,7 +73,6 @@ int buildTheGame(NeContext* context) {
 				position.x, position.y, true, true, context->timer / 1000.0f);
 	};
 	stage->add(object);
-
 	return 0;
 }
 

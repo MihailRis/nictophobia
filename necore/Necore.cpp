@@ -52,6 +52,7 @@ int Necore::run(NeGameProject* project) {
 		std::cerr << "fatal error: could not to load assets" << std::endl;
 		return status;
 	}
+	std::cout << "assets loaded successfully" << std::endl;
 
 	if (int status = project->build_game(context)){
 		return status;
