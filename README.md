@@ -17,6 +17,7 @@ Right now the engine contains:
 - text rendering, simple text formatting
 - assets management
 - user input handling, key-bindings
+- files subsystem (MIO-disk)
 
 ## Build (Linux):
 
