@@ -12,10 +12,11 @@ Project also contain subprojects:
 - nictoscript [in-development]
 
 Right now the engine contains:
-- raster images loading (png)
-- bitmap fonts, vector fonts with Freetype
+- assets:
+  - assets management
+  - raster images loading (png)
+  - bitmap fonts, vector fonts with Freetype
 - text rendering, simple text formatting
-- assets management
 - user input handling, key-bindings
 - files subsystem (miocpp)
 
