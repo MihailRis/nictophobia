@@ -24,24 +24,14 @@
 #include "necore/FreeTypeFont.h"
 
 void queueAssets(AssetsLoader* loader) {
-	for (int i = 0; i < 5; i++) {
-		loader->queue("textures/font_"+std::to_string(i), [i](){
-			Texture* texture = load_texture(iopath("res:font_"+std::to_string(i)+".png"));
-			return NeResource(SIMPLE, texture, [](void* ptr){delete (Texture*)ptr;});
-		});
-	}
-	/*loader->queue("fonts/font", [](){
-		std::vector<Texture*> pages;
-		for (int i = 0; i < 5; i++) {
-			pages.push_back(load_texture(iopath("res:font_"+std::to_string(i)+".png")));
-		}
-		std::unordered_map<wchar_t, int> advances;
-		advances['i'] = 50; advances['t'] = 60; advances['I'] = 60;
-		advances['l'] = 50; advances['\''] = 40; advances['.'] = 40;
-		advances[','] = 50; advances[';'] = 40; advances[':'] = 40; advances['!'] = 50;
-		BitmapFont* font = new BitmapFont(16, pages, advances, 50);
-		return NeResource(SIMPLE, font, [](void* ptr){delete (BitmapFont*)ptr;});
-	});*/
+	FreeTypeFontLoader* ftloader = new FreeTypeFontLoader();
+	loader->queue("<ftloader>", [ftloader]() {
+		return NeResource(SIMPLE, ftloader, [](void* ptr){delete (FreeTypeFontLoader*)ptr;});
+	});
+	loader->queue("fonts/ubuntu", [ftloader]() {
+		FreeTypeFont* font = ftloader->create(iopath("res:UbuntuMono-R.ttf"), 16);
+		return NeResource(SIMPLE, font, [](void* ptr){delete (FreeTypeFont*)ptr;});
+	});
 }
 
 int buildTheGame(NeContext* context) {
@@ -59,12 +49,6 @@ int buildTheGame(NeContext* context) {
 	Stage* stage = new Stage(new Camera({0, 0, 0}, 200.0f, false));
 	context->stage = stage;
 
-	FreeTypeFontLoader* ftloader = new FreeTypeFontLoader();
-	context->assets.put("ftloader", NeResource(SIMPLE, ftloader, [](void* ptr){delete (FreeTypeFontLoader*)ptr;}));
-
-	FreeTypeFont* font = ftloader->create(iopath("res:UbuntuMono-R.ttf"), 16);
-	context->assets.put("fonts/ubuntu", NeResource(SIMPLE, font, [](void* ptr){delete (FreeTypeFont*)ptr;}));
-
 	Object* object = new Object({10, 150, 0});
 	object->callback = [](NeContext* context, Object* object) {
 		glm::vec2 motion {0.0f, 0.0f};
@@ -80,18 +64,15 @@ int buildTheGame(NeContext* context) {
 	for (int i = 0; i < sourcetext.length(); i++) {
 		chars[i] = sourcetext[i];
 	}
+	chars[sourcetext.length()] = '\0';
 	std::wstring text(chars);
 	delete[] chars;
 
-	text[sourcetext.length()] = '\0';
 	object->draw2d = [text](NeContext* context, Batch2D* batch, Object* object) {
 		glm::vec3 position = object->getPosition();
 		batch->drawText("fonts/ubuntu",
 				text,
 				position.x, position.y, true, true, context->timer / 1000.0f);
-		//batch->drawText("fonts/ubuntu",
-		//		L"if ^b^#BADBED^ true^c^b {\n\ttry unable to do ^#0DEFAC^ smth i don't know данные^c удалены;\n}",
-		//		position.x, position.y, true, true, context->timer / 1000.0f);
 	};
 	stage->add(object);
 

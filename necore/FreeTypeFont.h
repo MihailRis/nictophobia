@@ -16,8 +16,9 @@ public:
 
 class FreeTypeFont : Font {
 	void* face;
+	unsigned char* data;
 public:
-	FreeTypeFont(void* face, int size, int height);
+	FreeTypeFont(void* face, int size, int height, unsigned char* data);
 	virtual ~FreeTypeFont();
 
 	virtual glyph* getGlyph(wchar_t character);

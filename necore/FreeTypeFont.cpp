@@ -26,14 +26,18 @@ FreeTypeFontLoader::~FreeTypeFontLoader() {
 FreeTypeFont* FreeTypeFontLoader::create(iopath path, int font_size) {
 	FT_Library library = (FT_Library)lib;
 	FT_Face face;
+	unsigned char* bytes;
 	{
 		size_t size;
-		int error = FT_New_Memory_Face(library, path.readBytes(&size), size, 0, &face);
+		bytes = path.readBytes(&size);
+		int error = FT_New_Memory_Face(library, bytes, size, 0, &face);
 		if (error == FT_Err_Unknown_File_Format){
 		  std::cerr << "font " << path.toStr() << " loading error: FT_Err_Unknown_File_Format" << std::endl;
+		  delete[] bytes;
 		  return nullptr;
 		} else if (error) {
 		  std::cerr << "font " << path.toStr() << " loading error (code: " << error << ")" << std::endl;
+		  delete[] bytes;
 		  return nullptr;
 		}
 	}
@@ -44,10 +48,11 @@ FreeTypeFont* FreeTypeFontLoader::create(iopath path, int font_size) {
 		std::cerr << "font loading error (FT_Set_Pixel_Sizes) (code: " << error << ")" << std::endl;
 		return nullptr;
 	}
-	return new FreeTypeFont((void*)face, font_size, face->height/64);
+	return new FreeTypeFont((void*)face, font_size, face->height/64, bytes);
 }
 
-FreeTypeFont::FreeTypeFont(void* face, int font_size, int height) : Font(font_size, height), face(face) {
+FreeTypeFont::FreeTypeFont(void* face, int font_size, int height, unsigned char* data) :
+		Font(font_size, height), face(face), data(data) {
 }
 
 FreeTypeFont::~FreeTypeFont() {
@@ -55,6 +60,7 @@ FreeTypeFont::~FreeTypeFont() {
 	for (auto const& [key, val] : glyphs) {
 		delete val.texture;
 	}
+	delete[] data;
 }
 
 int FreeTypeFont::getKerning(wchar_t left, wchar_t right) {
@@ -72,10 +78,11 @@ int FreeTypeFont::getKerning(wchar_t left, wchar_t right) {
 }
 
 glyph* FreeTypeFont::getGlyph(wchar_t character) {
+	if (!isPrintable(character))
+		return nullptr;
 	auto found = glyphs.find(character);
 	if (found == glyphs.end()) {
 		FT_Face face = (FT_Face)this->face;
-		int glyph_index = FT_Get_Char_Index(face, character);
 		int error = FT_Load_Char(face, character, FT_LOAD_RENDER);
 		if (error) {
 			return nullptr;
