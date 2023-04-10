@@ -11,6 +11,13 @@ Project also contain subprojects:
 - necore - nictophobia engine itself
 - nictoscript [in-development]
 
+Right now the engine contains:
+- raster images loading (png)
+- bitmap fonts, vector fonts with Freetype
+- text rendering, simple text formatting
+- assets management
+- user input handling, key-bindings
+
 ## Build (Linux):
 
 ```shell
