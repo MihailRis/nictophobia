@@ -16,6 +16,7 @@ OBJS = Nictophobia.o \
 	necore/Shader.o \
 	necore/Mesh.o \
 	necore/Font.o \
+	necore/FreeTypeFont.o \
 	necore/Batch2D.o \
 	necore/Camera.o \
 	necore/RasterImage.o \
@@ -50,7 +51,8 @@ endif
 
 CFLAGS += -std=c++17
 
-LDLIBS = -lGL -lglfw -lGLEW -lpng
+LDLIBS = -lGL -lglfw -lGLEW -lpng -lfreetype
+CFLAGS += `pkg-config --cflags freetype2`
 
 all:	Nictophobia
 

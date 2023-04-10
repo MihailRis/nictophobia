@@ -21,12 +21,27 @@
 #include "necore/colors.h"
 #include "necore/version.h"
 #include "necore/Font.h"
+#include "necore/FreeTypeFont.h"
 
 void queueAssets(AssetsLoader* loader) {
-	loader->queue("textures/font", [](){
-		Texture* texture = load_texture(iopath("res:font.png"));
-		return NeResource(SIMPLE, texture, [](void* ptr){delete (Texture*)ptr;});
-	});
+	for (int i = 0; i < 5; i++) {
+		loader->queue("textures/font_"+std::to_string(i), [i](){
+			Texture* texture = load_texture(iopath("res:font_"+std::to_string(i)+".png"));
+			return NeResource(SIMPLE, texture, [](void* ptr){delete (Texture*)ptr;});
+		});
+	}
+	/*loader->queue("fonts/font", [](){
+		std::vector<Texture*> pages;
+		for (int i = 0; i < 5; i++) {
+			pages.push_back(load_texture(iopath("res:font_"+std::to_string(i)+".png")));
+		}
+		std::unordered_map<wchar_t, int> advances;
+		advances['i'] = 50; advances['t'] = 60; advances['I'] = 60;
+		advances['l'] = 50; advances['\''] = 40; advances['.'] = 40;
+		advances[','] = 50; advances[';'] = 40; advances[':'] = 40; advances['!'] = 50;
+		BitmapFont* font = new BitmapFont(16, pages, advances, 50);
+		return NeResource(SIMPLE, font, [](void* ptr){delete (BitmapFont*)ptr;});
+	});*/
 }
 
 int buildTheGame(NeContext* context) {
@@ -41,10 +56,16 @@ int buildTheGame(NeContext* context) {
 	bindings->bind("right", [processor](){return processor->pressed(NC_KEY_D) || processor->pressed(NC_KEY_RIGHT);});
 
 	// setting up stage
-	Stage* stage = new Stage(new Camera({0, 0, 0}, 600.0f, false));
+	Stage* stage = new Stage(new Camera({0, 0, 0}, 200.0f, false));
 	context->stage = stage;
 
-	Object* object = new Object({200, 200, 0});
+	FreeTypeFontLoader* ftloader = new FreeTypeFontLoader();
+	context->assets.put("ftloader", NeResource(SIMPLE, ftloader, [](void* ptr){delete (FreeTypeFontLoader*)ptr;}));
+
+	FreeTypeFont* font = ftloader->create(iopath("res:UbuntuMono-R.ttf"), 16);
+	context->assets.put("fonts/ubuntu", NeResource(SIMPLE, font, [](void* ptr){delete (FreeTypeFont*)ptr;}));
+
+	Object* object = new Object({10, 150, 0});
 	object->callback = [](NeContext* context, Object* object) {
 		glm::vec2 motion {0.0f, 0.0f};
 		float speed = 5.0f;
@@ -54,17 +75,23 @@ int buildTheGame(NeContext* context) {
 		if (context->bindings.isActive("right")) {motion.x += speed;};
 		object->translate(motion.x, motion.y, 0.0f);
 	};
-	std::vector<Texture*> pages;
-	pages.push_back((Texture*)context->assets.get("textures/font"));
-	std::unordered_map<wchar_t, int> advances;
-	advances['i'] = 40; advances['t'] = 60;
-	advances['l'] = 40;
-	BitmapFont* font = new BitmapFont(16, pages, advances);
-	context->assets.put("fonts/font", NeResource(SIMPLE, font, [](void* ptr){delete (BitmapFont*)ptr;}));
+	std::string sourcetext = iopath("res:ui.glslf").readString();
+	wchar_t* chars = new wchar_t[sourcetext.length()+1];
+	for (int i = 0; i < sourcetext.length(); i++) {
+		chars[i] = sourcetext[i];
+	}
+	std::wstring text(chars);
+	delete[] chars;
 
-	object->draw2d = [](NeContext* context, Batch2D* batch, Object* object) {
+	text[sourcetext.length()] = '\0';
+	object->draw2d = [text](NeContext* context, Batch2D* batch, Object* object) {
 		glm::vec3 position = object->getPosition();
-		batch->drawText("fonts/font", L"if ^b^#BADBED^ true^c^b {\n\tdo ^s^ unable to do smth i don't know^s;\n}", 10, 100, true, true, context->timer / 1000.0f);
+		batch->drawText("fonts/ubuntu",
+				text,
+				position.x, position.y, true, true, context->timer / 1000.0f);
+		//batch->drawText("fonts/ubuntu",
+		//		L"if ^b^#BADBED^ true^c^b {\n\ttry unable to do ^#0DEFAC^ smth i don't know данные^c удалены;\n}",
+		//		position.x, position.y, true, true, context->timer / 1000.0f);
 	};
 	stage->add(object);
 

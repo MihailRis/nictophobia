@@ -1,4 +1,5 @@
 #include "Font.h"
+#include "Texture.h"
 
 bool Font::isPrintable(wchar_t character) {
 	switch (character) {
@@ -15,7 +16,14 @@ bool Font::isPrintable(wchar_t character) {
 	}
 }
 
-BitmapFont::BitmapFont(int size, std::vector<Texture*> pages, std::unordered_map<wchar_t, int> advances) : Font(size), pages(pages), advances(advances){
+BitmapFont::BitmapFont(int size, std::vector<Texture*> pages, std::unordered_map<wchar_t, int> advances, int basicAdvancePercent)
+ : Font(size), pages(pages), advances(advances), basicAdvancePercent(basicAdvancePercent){
+}
+
+BitmapFont::~BitmapFont() {
+	for (Texture* page : pages) {
+		delete page;
+	}
 }
 
 #define FONT_GLYPH_MUL (1.0f/16.0f)
@@ -34,7 +42,7 @@ glyph* BitmapFont::getGlyph(wchar_t character) {
 
 		};
 		auto advance = advances.find(character);
-		int advancePercent = 80;
+		int advancePercent = basicAdvancePercent;
 		if (advance != advances.end()) {
 			advancePercent = advance->second;
 		}

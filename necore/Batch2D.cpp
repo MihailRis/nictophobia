@@ -212,6 +212,7 @@ void Batch2D::drawText(std::string fontName, std::wstring text, float x, float y
 	bool bold = false;
 	bool wave = false;
 	bool shake = false;
+	wchar_t prev = 0;
 	for (int i = 0 ; i < text.length(); i++) {
 		wchar_t c = text[i];
 		if (format && c == '^' && i + 1 < text.length()) {
@@ -259,6 +260,9 @@ void Batch2D::drawText(std::string fontName, std::wstring text, float x, float y
 		if (font->isPrintable(c)) {
 			glyph* charglyph = font->getGlyph(c);
 			if (charglyph == nullptr) {
+				charglyph = font->getGlyph((c & 0x7F) + 128);
+			}
+			if (charglyph == nullptr) {
 				untexture();
 				region = uvregion();
 			} else {
@@ -267,6 +271,15 @@ void Batch2D::drawText(std::string fontName, std::wstring text, float x, float y
 			}
 			float lx = x;
 			float ly = y;
+			if (charglyph) {
+				ly += charglyph->bearingY * (yup ? 1 : -1);
+				if (i+1 < text.length()) {
+					wchar_t next = text[i+1];
+					int kerning = font->getKerning(c, next);
+					lx += kerning;
+					x += kerning;
+				}
+			}
 			if (wave) {
 				ly += (int)(sin(timer * 5 + i) * fontSize * 0.1f);
 			}
@@ -277,18 +290,25 @@ void Batch2D::drawText(std::string fontName, std::wstring text, float x, float y
 			}
 
 			rect(lx, ly, fontSize, fontSize, 0, 0, 0, region, false, !yup, tint);
-			if (bold) {
-				rect(lx+2, ly, fontSize, fontSize, 0, 0, 0, region, false, !yup, tint);
+			if (bold && charglyph) {
+				rect(lx + 1, ly, fontSize, fontSize, 0, 0, 0, region, false, !yup, tint);
 			}
-			x += charglyph->advance * (bold ? 1.16 : 1);
+			if (charglyph == nullptr) {
+				x += fontSize + 1;
+			} else {
+				x += charglyph->advance * (bold ? 1.16 : 1);
+			}
 		} else if (c == '\n') {
 			x = initx;
-			y += fontSize * 1.5 * (yup ? -1 : 1);
+			y += font->getAdvanceY() * (yup ? -1 : 1);
+		} else if (c == '\r') {
+			x = initx;
 		} else if (c == '\t') {
 			x += fontSize * 2;
 		} else {
 			x += fontSize / 2;
 		}
+		prev = c;
 	}
 }
 
@@ -341,5 +361,6 @@ void Batch2D::texture(std::string name) {
 }
 
 void Batch2D::untexture() {
+	flush();
 	_texture = nullptr;
 }
