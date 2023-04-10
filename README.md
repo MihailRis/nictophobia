@@ -3,7 +3,7 @@
 Small C++ game-engine (2D and minimal 3D) (GL+GLFW+AL+glm)
 
 - **status**: in-development
-- **current dependencies**: GL, GLFW, [GLM](https://github.com/g-truc/glm), libpng
+- **current dependencies**: GL, GLFW, [GLM](https://github.com/g-truc/glm), libpng, libfreetype
 - **standard**: C++17
 
 Project also contain subprojects:
