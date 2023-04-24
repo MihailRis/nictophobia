@@ -32,6 +32,7 @@ public:
 
 	std::string readString() const;
 	unsigned char* readBytes(size_t* size) const;
+	void writeBytes(unsigned char* bytes, size_t size) const;
 	bool exists() const;
 	bool isFile() const;
 	bool isDir() const;

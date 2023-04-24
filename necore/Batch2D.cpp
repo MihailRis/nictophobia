@@ -275,7 +275,7 @@ void Batch2D::drawText(std::string fontName, std::wstring text, float x, float y
 				ly += charglyph->bearingY * (yup ? 1 : -1);
 				if (i+1 < text.length()) {
 					wchar_t next = text[i+1];
-					int kerning = font->getKerning(c, next);
+					int kerning = font->getKerning(c, next) * 10;
 					lx += kerning;
 					x += kerning;
 				}

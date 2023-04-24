@@ -15,6 +15,7 @@ public:
 	virtual bool exists(std::string path);
 	virtual bool isFile(std::string path);
 	virtual bool isDir(std::string path);
+	virtual void writeBytes(std::string path, unsigned char* bytes, size_t size);
 };
 
 #endif /* MIOCPP_DIRDEVICE_H_ */

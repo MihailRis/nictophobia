@@ -87,6 +87,10 @@ unsigned char* iopath::readBytes(size_t* size) const {
 	return mio::readBytes(this, size);
 }
 
+void iopath::writeBytes(unsigned char* bytes, size_t size) const {
+	return mio::writeBytes(this, bytes, size);
+}
+
 bool iopath::exists() const {
 	return mio::exists(this);
 }

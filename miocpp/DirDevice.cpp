@@ -33,3 +33,13 @@ bool DirDevice::isFile(std::string path){
 bool DirDevice::isDir(std::string path){
 	return std::filesystem::is_directory(basepath+"/"+path);
 }
+
+void DirDevice::writeBytes(std::string path, unsigned char* bytes, size_t size) {
+	std::ofstream file(basepath+"/"+path, ios::out | ios::binary);
+	if (!file.is_open()) {
+		std::cerr << "Could not to open file " << basepath << "/" << path << std::endl;
+		return;
+	}
+	file.exceptions(std::ifstream::badbit);
+	file.write((char*)bytes, size);
+}

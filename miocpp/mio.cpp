@@ -39,6 +39,12 @@ unsigned char* mio::readBytes(const iopath* path, size_t* size) {
 	return nullptr;
 }
 
+void mio::writeBytes(const iopath* path, unsigned char* bytes, size_t size){
+	if (IODevice* device = get_device(path->label())) {
+		device->writeBytes(path->path(), bytes, size);
+	}
+}
+
 bool mio::exists(const iopath* path) {
 	if (IODevice* device = get_device(path->label())) {
 		return device->exists(path->path());

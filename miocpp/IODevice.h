@@ -16,6 +16,8 @@ public:
 
 	virtual std::string readString(std::string path);
 	virtual unsigned char* readBytes(std::string path, size_t* length);
+
+	virtual void writeBytes(std::string path, unsigned char* bytes, size_t size) = 0;
 };
 
 #endif /* MIOCPP_IODEVICE_H_ */
