@@ -31,6 +31,7 @@ OBJS = Nictophobia.o \
 	necore/stage/Stage.o \
 	necore/stage/Object.o \
 	necore/g2d/Sprite.o \
+	necore/g2d/LMPacker.o \
 	necore/gl/GLWindow.o \
 	necore/gl/GLTexture.o \
 	necore/gl/GLShader.o \
