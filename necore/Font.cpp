@@ -16,6 +16,10 @@ bool Font::isPrintable(wchar_t character) {
 	}
 }
 
+int Font::getKerning(wchar_t, wchar_t) {
+	return 0;
+}
+
 BitmapFont::BitmapFont(int size, std::vector<Texture*> pages, std::unordered_map<wchar_t, int> advances, int basicAdvancePercent)
  : Font(size), pages(pages), advances(advances), basicAdvancePercent(basicAdvancePercent){
 }
@@ -31,7 +35,7 @@ BitmapFont::~BitmapFont() {
 glyph* BitmapFont::getGlyph(wchar_t character) {
 	auto found = glyphs.find(character);
 	if (found == glyphs.end()) {
-		int pageid = character >> 8;
+		unsigned int pageid = character >> 8;
 		if (pageid > pages.size()){
 			return nullptr;
 		}

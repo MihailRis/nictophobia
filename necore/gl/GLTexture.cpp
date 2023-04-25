@@ -26,6 +26,8 @@ GLTexture* GLTexture::fromImage(RasterImage* image) {
     unsigned int texture;
     int format = GL_RGB;
     switch (image->getFormat()) {
+    case RGB:
+    	break;
     case RGBA:
     	format = GL_RGBA;
     	break;

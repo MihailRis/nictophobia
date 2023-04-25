@@ -10,8 +10,12 @@ struct rectangle {
 	int y;
 	int width;
 	int height;
-	int extX;
-	int extY;
+	int extX = 0;
+	int extY = 0;
+
+	rectangle(int x, int y, int width, int height)
+		: x(x), y(y), width(width), height(height){
+	}
 };
 
 class LMPacker {

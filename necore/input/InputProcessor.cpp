@@ -11,24 +11,27 @@ void InputProcessor::markAll() {
 }
 
 void InputProcessor::onScroll(int amount){
+	scroll = amount;
 }
 
-void InputProcessor::onKeyPressed(int keycode, int scancode) {
+void InputProcessor::onKeyPressed(int keycode, int) {
 	keys[keycode] = INPUT_JUST_ACTIVED;
 }
 
-void InputProcessor::onKeyRelease(int keycode, int scancode) {
+void InputProcessor::onKeyRelease(int keycode, int) {
 	keys[keycode] = INPUT_JUST_INACTIVED;
 }
 
 void InputProcessor::onMousePressed(int button) {
+	buttons[button] = INPUT_JUST_ACTIVED;
 }
 
 void InputProcessor::onMouseRelease(int button) {
+	buttons[button] = INPUT_JUST_INACTIVED;
 }
 
-void InputProcessor::onMouseMove(int x, int y) {
+void InputProcessor::onMouseMove(int, int) {
 }
 
-void InputProcessor::onWindowResize(int width, int height) {
+void InputProcessor::onWindowResize(int, int) {
 }

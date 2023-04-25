@@ -203,7 +203,7 @@ inline int hextoint(int c) {
 void Batch2D::drawText(std::string fontName, std::wstring text, float x, float y, bool format, bool yup, float timer) {
 	Font* font = (Font*)assets->get(fontName);
 	float initx = x;
-	float inity = y;
+
 	int fontSize = font->getSize();
 	uvregion region;
 
@@ -212,8 +212,7 @@ void Batch2D::drawText(std::string fontName, std::wstring text, float x, float y
 	bool bold = false;
 	bool wave = false;
 	bool shake = false;
-	wchar_t prev = 0;
-	for (int i = 0 ; i < text.length(); i++) {
+	for (size_t i = 0 ; i < text.length(); i++) {
 		wchar_t c = text[i];
 		if (format && c == '^' && i + 1 < text.length()) {
 			wchar_t next = text[++i];
@@ -308,7 +307,6 @@ void Batch2D::drawText(std::string fontName, std::wstring text, float x, float y
 		} else {
 			x += fontSize / 2;
 		}
-		prev = c;
 	}
 }
 

@@ -9,8 +9,8 @@ inline int getPackerScore(rectangle& rect) {
 }
 
 LMPacker::LMPacker(const uint32_t sizes[], size_t length) {
-	for (int i = 0; i < length/2; i++) {
-		rectangle rect {0, 0, (int)sizes[i * 2], (int)sizes[i * 2 + 1]};
+	for (unsigned int i = 0; i < length/2; i++) {
+		rectangle rect(0, 0, (int)sizes[i * 2], (int)sizes[i * 2 + 1]);
 		rects.push_back(rect);
 	}
 	sort(rects.begin(), rects.end(), [](rectangle a, rectangle b) {
@@ -20,7 +20,7 @@ LMPacker::LMPacker(const uint32_t sizes[], size_t length) {
 
 LMPacker::~LMPacker() {
 	if (matrix) {
-		for (int y = 0; y < (height >> mbit); y++) {
+		for (unsigned int y = 0; y < (height >> mbit); y++) {
 			delete[] matrix[y];
 		}
 		delete[] matrix;
@@ -49,7 +49,7 @@ bool LMPacker::build(uint32_t width, uint32_t height, uint16_t extension, uint32
 	}
 	for (unsigned int i = 0; i < rects.size(); i++) {
 		rectangle& rect = rects[i];
-		rect = {0, 0, rect.width, rect.height};
+		rect = rectangle(0, 0, rect.width, rect.height);
         rect.width += extension * 2;
         rect.height += extension * 2;
         if (mpix > 1) {

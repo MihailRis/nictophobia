@@ -59,7 +59,7 @@ int buildTheGame(NeContext* context) {
 	};
 	std::string sourcetext = iopath("res:ui.glslf").readString();
 	wchar_t* chars = new wchar_t[sourcetext.length()+1];
-	for (int i = 0; i < sourcetext.length(); i++) {
+	for (unsigned int i = 0; i < sourcetext.length(); i++) {
 		chars[i] = sourcetext[i];
 	}
 	chars[sourcetext.length()] = '\0';
@@ -80,7 +80,7 @@ void finishTheGame(NeContext* context) {
 	delete context->stage;
 }
 
-int main(int argc, char* argv[]) {
+int main(int, char*[]) {
 	Necore core;
 	NeGameProject project {"test project"};
 	project.assets_ask = queueAssets;

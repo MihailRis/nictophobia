@@ -11,7 +11,7 @@ void _read_from_bytes_fn(png_structp png_ptr, png_bytep out, png_size_t length){
 	if(io_ptr == NULL)
 		return;
 	unsigned char** input = (unsigned char**)io_ptr;
-	for (int i = 0; i < length; i++) {
+	for (unsigned int i = 0; i < length; i++) {
 		out[i] = (*input)[i];
 	}
 	*input += length;

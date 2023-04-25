@@ -5,6 +5,8 @@
 
 class InputProcessor {
 	std::unordered_map<int, char> keys;
+	std::unordered_map<int, char> buttons;
+	int scroll = 0;
 public:
 	InputProcessor();
 	virtual ~InputProcessor();
@@ -22,6 +24,17 @@ public:
 			return status->second > 0;
 		}
 		return false;
+	}
+
+	bool clicked(int button) {
+		if (auto status = buttons.find(button); status != keys.end()) {
+			return status->second > 0;
+		}
+		return false;
+	}
+
+	int getScroll() const {
+		return scroll;
 	}
 };
 

@@ -10,9 +10,9 @@ class Camera {
 	glm::vec3 right {-1, 0, 0};
 	glm::vec3 position;
 	glm::mat4 rotation {1.0f};
+	float fov;
 	bool perspective;
 	bool flipped;
-	float fov;
 	float zoom = 1.0f;
 public:
 	Camera(glm::vec3 position, float fov, bool perspective);

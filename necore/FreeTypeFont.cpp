@@ -101,9 +101,6 @@ glyph* FreeTypeFont::getGlyph(wchar_t character) {
 	    }
 
 	    int bbox_ymax = face->bbox.yMax / 64;
-	    int glyph_width = face->glyph->metrics.width / 64;
-	    int advance2 = face->glyph->metrics.horiAdvance / 64;
-	    int x_off = (advance2 - glyph_width) / 2;
 	    int y_off = bbox_ymax - face->glyph->metrics.horiBearingY / 64;
 		int bearing = y_off - 30;
 

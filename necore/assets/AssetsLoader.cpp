@@ -11,7 +11,7 @@ AssetsLoader::~AssetsLoader() {
 }
 
 
-void AssetsLoader::queue(assets_asker_func asker) {
+void AssetsLoader::queue(assets_asker_func) {
 
 }
 

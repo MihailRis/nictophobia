@@ -9,7 +9,7 @@
 
 std::unordered_map<GLFWwindow*, GLWindow*> GLWindow::wrappers;
 
-void GLWindow::key_callback(GLFWwindow* glfwwindow, int key, int scancode, int action, int mode) {
+void GLWindow::key_callback(GLFWwindow* glfwwindow, int key, int scancode, int action, int) {
 	GLWindow* window = GLWindow::wrappers[glfwwindow];
 	InputProcessor* processor = window->processor;
 	if (action == GLFW_PRESS){
@@ -24,16 +24,25 @@ void GLWindow::key_callback(GLFWwindow* glfwwindow, int key, int scancode, int a
 	}
 }
 
-void GLWindow::mouse_button_callback(GLFWwindow* glfwwindow, int button, int action, int mode){
+void GLWindow::mouse_button_callback(GLFWwindow* glfwwindow, int button, int action, int){
 	GLWindow* window = GLWindow::wrappers[glfwwindow];
+	InputProcessor* processor = window->processor;
 	if (action == GLFW_PRESS){
+		if (processor) {
+			processor->onMousePressed(button);
+		}
 	}
 	else if (action == GLFW_RELEASE){
+		if (processor) {
+			processor->onMouseRelease(button);
+		}
 	}
 }
 
 void GLWindow::cursor_position_callback(GLFWwindow* glfwwindow, double xpos, double ypos){
 	GLWindow* window = GLWindow::wrappers[glfwwindow];
+	InputProcessor* processor = window->processor;
+	processor->onMouseMove(xpos, ypos);
 }
 
 void GLWindow::window_size_callback(GLFWwindow* glfwwindow, int width, int height){
@@ -45,9 +54,9 @@ void GLWindow::window_size_callback(GLFWwindow* glfwwindow, int width, int heigh
 
 
 GLWindow::GLWindow(GLFWwindow* window, int width, int height)
-	: width(width),
-	  height(height),
-	  window(window) {
+	: window(window),
+	  width(width),
+	  height(height) {
 }
 
 GLWindow::~GLWindow() {

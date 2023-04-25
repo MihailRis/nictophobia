@@ -38,7 +38,7 @@ public:
 		return advanceY;
 	}
 	virtual glyph* getGlyph(wchar_t character) = 0;
-	virtual int getKerning(wchar_t left, wchar_t right) {return 0;}
+	virtual int getKerning(wchar_t left, wchar_t right);
 	virtual bool isPrintable(wchar_t character);
 };
 
