@@ -26,10 +26,11 @@ Right now the engine contains:
 mkdir build
 ln -s res build/res
 cd build
-make -f ../Makefile BUILD_MODE=run
+cmake ../
+make
 
 # then run
-./Nictophobia
+./nictophobia
 ```
 
 ## Text formatting
