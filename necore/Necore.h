@@ -16,6 +16,9 @@ struct NeGameProject {
 	assets_asker_func assets_ask = nullptr;
 	build_game_func build_game = nullptr;
 	destruct_game_func destruct_game = nullptr;
+
+	unsigned int init_window_width = 900;
+	unsigned int init_window_height = 600;
 };
 
 class Necore {

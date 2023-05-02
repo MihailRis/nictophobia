@@ -41,7 +41,7 @@ int Necore::run(NeGameProject* project) {
 	mio::add_device("res", new DirDevice("res"));
 
 	std::string title = build_title(project->name);
-	Window* window = GLWindow::create(900, 200, title.c_str());
+	Window* window = GLWindow::create(project->init_window_width, project->init_window_height, title.c_str());
 	NeContext* context = new NeContext(window);
 
 	// loading assets

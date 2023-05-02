@@ -44,7 +44,7 @@ int buildTheGame(NeContext* context) {
 	bindings->bind("right", [processor](){return processor->pressed(NC_KEY_D) || processor->pressed(NC_KEY_RIGHT);});
 
 	// setting up stage
-	Stage* stage = new Stage(new Camera({0, 0, 0}, 200.0f, false));
+	Stage* stage = new Stage(new Camera({0, 0, 0}, context->window->getHeight(), false));
 	context->stage = stage;
 
 	Object* object = new Object({10, 150, 0});
@@ -57,20 +57,11 @@ int buildTheGame(NeContext* context) {
 		if (context->bindings.isActive("right")) {motion.x += speed;};
 		object->translate(motion.x, motion.y, 0.0f);
 	};
-	std::string sourcetext = iopath("res:ui.glslf").readString();
-	wchar_t* chars = new wchar_t[sourcetext.length()+1];
-	for (unsigned int i = 0; i < sourcetext.length(); i++) {
-		chars[i] = sourcetext[i];
-	}
-	chars[sourcetext.length()] = '\0';
-	std::wstring text(chars);
-	delete[] chars;
-
-	object->draw2d = [text](NeContext* context, Batch2D* batch, Object* object) {
+	object->draw2d = [](NeContext*, Batch2D* batch, Object* object) {
 		glm::vec3 position = object->getPosition();
-		batch->drawText("fonts/ubuntu",
-				text,
-				position.x, position.y, true, true, context->timer / 1000.0f);
+		batch->untexture();
+		batch->color(1, 1, 1, 1);
+		batch->rect(position.x, position.y, 10, 10);
 	};
 	stage->add(object);
 	return 0;
