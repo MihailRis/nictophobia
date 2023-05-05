@@ -68,7 +68,7 @@ int buildTheGame(NeContext* context) {
 		stage->add(object);
 	}
 
-	std::vector<obj_object> objects = load_obj_model(iopath("res:cube.obj").readString());
+	std::vector<obj_object> objects = load_obj_model(iopath("res:sphere.obj").readString());
 	for (obj_object obj : objects) {
 		for (obj_mesh mesh : obj.meshes){
 			NeResource res = {SIMPLE, mesh.mesh, [](void* v){delete (Mesh*)v;}};
