@@ -7,6 +7,7 @@
 
 class Window;
 class Stage;
+class Camera;
 
 class NeContext {
 public:
@@ -15,6 +16,8 @@ public:
 	std::vector<assets_asker_func> askers;
 	InputBindings<std::string> bindings;
 	Stage* stage = nullptr;
+	Stage* stage3d = nullptr;
+	Camera* camera = nullptr;
 	unsigned long long timer = 0;
 
 	NeContext(Window* window);

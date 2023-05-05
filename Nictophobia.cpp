@@ -1,13 +1,16 @@
 #include <iostream>
 #include <functional>
 #include <glm/glm.hpp>
+#include "glm/gtc/matrix_transform.hpp"
 #include "necore/Window.h"
 #include "necore/Batch2D.h"
 #include "necore/Camera.h"
 #include "necore/Texture.h"
 #include "necore/Shader.h"
+#include "necore/Mesh.h"
 #include "necore/NeContext.h"
 #include "necore/formats/png_format.h"
+#include "necore/formats/obj_format.h"
 #include "necore/assets/Assets.h"
 #include "necore/assets/AssetsLoader.h"
 #include "necore/assets/assets_loading.h"
@@ -35,35 +38,35 @@ void queueAssets(AssetsLoader* loader) {
 }
 
 int buildTheGame(NeContext* context) {
-	// setting up input
-	InputProcessor* processor = context->window->getInputProcessor();
-	InputBindings<std::string>* bindings = &context->bindings;
-	bindings->bind("up", [processor](){return processor->pressed(NC_KEY_W) || processor->pressed(NC_KEY_UP);});
-	bindings->bind("down", [processor](){return processor->pressed(NC_KEY_S) || processor->pressed(NC_KEY_DOWN);});
-	bindings->bind("left", [processor](){return processor->pressed(NC_KEY_A) || processor->pressed(NC_KEY_LEFT);});
-	bindings->bind("right", [processor](){return processor->pressed(NC_KEY_D) || processor->pressed(NC_KEY_RIGHT);});
-
 	// setting up stage
-	Stage* stage = new Stage(new Camera({0, 0, 0}, context->window->getHeight(), false));
-	context->stage = stage;
+	Stage* stage2d = new Stage(new Camera({0, 0, 0}, context->window->getHeight(), false));
+	context->stage = stage2d;
 
-	Object* object = new Object({10, 150, 0});
-	object->callback = [](NeContext* context, Object* object) {
-		glm::vec2 motion {0.0f, 0.0f};
-		float speed = 5.0f;
-		if (context->bindings.isActive("up")) {motion.y += speed;};
-		if (context->bindings.isActive("down")) {motion.y -= speed;};
-		if (context->bindings.isActive("left")) {motion.x -= speed;};
-		if (context->bindings.isActive("right")) {motion.x += speed;};
-		object->translate(motion.x, motion.y, 0.0f);
+	context->camera = new Camera(glm::vec3(0, 2, 10), 3.141592/3, true);
+	Stage* stage = new Stage(context->camera);
+	context->stage3d = stage;
+
+	Object* object = new Object({0, 0, 0});
+	object->callback = [](NeContext*, Object*) {
 	};
-	object->draw2d = [](NeContext*, Batch2D* batch, Object* object) {
+	object->drawCallback = [](NeContext* context, Batch2D*, Object* object) {
 		glm::vec3 position = object->getPosition();
-		batch->untexture();
-		batch->color(1, 1, 1, 1);
-		batch->rect(position.x, position.y, 10, 10);
+		Shader* shader = (Shader*) context->assets.get("shaders/g3d");
+		shader->uniformMatrix("u_model", glm::translate(glm::mat4(1.0f), position));
+		Mesh* mesh = (Mesh*)context->assets.get("mesh");
+		mesh->draw();
 	};
 	stage->add(object);
+
+	std::vector<obj_object> objects = load_obj_model(iopath("res:cube.obj").readString());
+	for (obj_object obj : objects) {
+		for (obj_mesh mesh : obj.meshes){
+			NeResource res = {SIMPLE, mesh.mesh, [](void* v){delete (Mesh*)v;}};
+			context->assets.put("mesh", res);
+			//context->assets.put("mesh-"+std::to_string((uint64_t)mesh.mesh), res);
+		}
+	}
+
 	return 0;
 }
 

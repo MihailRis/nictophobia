@@ -6,6 +6,8 @@
 #include "../Camera.h"
 #include "../Batch2D.h"
 
+#include <iostream>
+
 
 Stage::Stage(Camera* camera) : camera(camera) {}
 
@@ -26,8 +28,10 @@ void Stage::add(Object* object) {
 
 void Stage::act(NeContext* context) {
 	for (Object* object : objects) {
-		if (object->callback) {
+		if (object && object->callback) {
 			object->callback(context, object);
+		} else {
+			std::cout << "wtf" << std::endl;
 		}
 	}
 }
@@ -35,8 +39,8 @@ void Stage::act(NeContext* context) {
 void Stage::draw(NeContext* context, Batch2D* batch) {
 	batch->setCamera(camera);
 	for (Object* object : objects) {
-		if (object->draw2d) {
-			object->draw2d(context, batch, object);
+		if (object->drawCallback) {
+			object->drawCallback(context, batch, object);
 		}
 	}
 }

@@ -3,7 +3,7 @@ project(nictophobia)
 
 set(CMAKE_CXX_STANDARD 17)
 
-set(CMAKE_CXX_FLAGS "-Wall -Wextra")
+set(CMAKE_CXX_FLAGS "-Wall -Wextra -g")
 set(SOURCE Nictophobia.cpp
 	miocpp/iopath.cpp
 	miocpp/IODevice.cpp
@@ -23,6 +23,7 @@ set(SOURCE Nictophobia.cpp
 	necore/NeContext.cpp
 	necore/Necore.cpp
 	necore/formats/png_format.cpp
+	necore/formats/obj_format.cpp
 	necore/input/InputProcessor.cpp
 	necore/input/InputBinding.cpp
 	necore/assets/Assets.cpp

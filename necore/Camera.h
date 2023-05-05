@@ -25,6 +25,25 @@ public:
 	void setPosition(glm::vec3 position);
 
 	void rotate(float x, float y, float z);
+	void setRotation(glm::mat4 rotation) {
+		this->rotation = rotation;
+	}
+
+	void translate(glm::vec3 delta) {
+		position += delta;
+	}
+
+	glm::vec3 getFront() const {
+		return front;
+	}
+
+	glm::vec3 getRight() const {
+		return right;
+	}
+
+	glm::vec3 getUp() const {
+		return up;
+	}
 };
 
 #endif /* NECORE_CAMERA_H_ */

@@ -78,11 +78,12 @@ void GLWindow::swapInterval(int interval) {
 }
 
 void GLWindow::pollEvents() {
+	processor->update();
 	glfwPollEvents();
 }
 
 void GLWindow::clear() {
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void GLWindow::makeActive() {
@@ -134,7 +135,9 @@ Window* GLWindow::create(int width, int height, const char* title) {
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
 	glEnable(GL_BLEND);
+	glEnable(GL_DEPTH_TEST);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glDisable(GL_CULL_FACE);
 
 	glfwSwapInterval(1);
 

@@ -25,6 +25,12 @@ void GLMesh::draw(unsigned int primitive) {
 	glBindVertexArray(0);
 }
 
+void GLMesh::draw() {
+	glBindVertexArray(vao);
+	glDrawArrays(GL_TRIANGLES, 0, vertices);
+	glBindVertexArray(0);
+}
+
 
 GLMesh* GLMesh::create(const float* buffer, unsigned int vertices, const vattr_t attrs[]) {
 	unsigned int vertexSize = 0;

@@ -7,7 +7,9 @@ InputProcessor::InputProcessor() {
 InputProcessor::~InputProcessor() {
 }
 
-void InputProcessor::markAll() {
+void InputProcessor::update() {
+	dx = 0;
+	dy = 0;
 }
 
 void InputProcessor::onScroll(int amount){
@@ -30,7 +32,13 @@ void InputProcessor::onMouseRelease(int button) {
 	buttons[button] = INPUT_JUST_INACTIVED;
 }
 
-void InputProcessor::onMouseMove(int, int) {
+void InputProcessor::onMouseMove(int x, int y) {
+	if (mx != -1) {
+		dx += x-mx;
+		dy += y-my;
+	}
+	mx = x;
+	my = y;
 }
 
 void InputProcessor::onWindowResize(int, int) {

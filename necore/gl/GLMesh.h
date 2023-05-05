@@ -16,6 +16,7 @@ public:
 
 	void reload(const float* buffer, unsigned int vertices);
 	void draw(unsigned int primitive);
+	void draw();
 
 	static GLMesh* create(const float* buffer, unsigned int vertices, const vattr_t attrs[]);
 };

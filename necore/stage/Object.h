@@ -8,14 +8,14 @@ class Object;
 class NeContext;
 class Batch2D;
 
-typedef std::function<void(NeContext*, Batch2D*, Object*)> draw2d_func;
+typedef std::function<void(NeContext*, Batch2D*, Object*)> draw_func;
 typedef std::function<void(NeContext*, Object*)> update_callback;
 
 class Object {
 	glm::vec3 position;
 public:
 	update_callback callback = nullptr;
-	draw2d_func draw2d = nullptr;
+	draw_func drawCallback = nullptr;
 
 	Object(glm::vec3 position) : position(position) {}
 
