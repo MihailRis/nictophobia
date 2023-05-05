@@ -8,6 +8,9 @@ void InputBinding::update() {
 	bool active = trigger();
 	if (active) {
 		if (status == INPUT_INACTIVE || status == INPUT_JUST_INACTIVED) {
+			for (hotkey_callback callback : callbacks) {
+				callback();
+			}
 			status = INPUT_JUST_ACTIVED;
 		}
 		else {
@@ -77,6 +80,14 @@ template <typename T>
 void InputBindings<T>::update() {
 	for (auto it = bindings.begin(); it != bindings.end(); it++) {
 	    it->second->update();
+	}
+}
+
+template <typename T>
+void InputBindings<T>::hotkey(T name, hotkey_callback callback) {
+	auto binding = bindings.find(name);
+	if (binding != bindings.end()) {
+		binding->second->addCallback(callback);
 	}
 }
 

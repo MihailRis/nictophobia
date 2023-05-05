@@ -22,6 +22,7 @@ set(SOURCE Nictophobia.cpp
 	necore/RasterImage.cpp
 	necore/NeContext.cpp
 	necore/Necore.cpp
+	necore/debug/FreeCamera.cpp
 	necore/formats/png_format.cpp
 	necore/formats/obj_format.cpp
 	necore/input/InputProcessor.cpp

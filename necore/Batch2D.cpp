@@ -335,9 +335,7 @@ void Batch2D::setCamera(float ar, Camera* camera) {
 }
 
 void Batch2D::setCamera(Camera* camera) {
-	int w = window->getWidth();
-	int h = window->getHeight();
-	setCamera((float)w/(float)h, camera);
+	setCamera(window->getRatio(), camera);
 }
 
 void Batch2D::end() {

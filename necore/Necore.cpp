@@ -59,12 +59,17 @@ int Necore::run(NeGameProject* project) {
 
 	InputBindings<std::string>* bindings = &context->bindings;
 	InputProcessor* processor = context->window->getInputProcessor();
-	bindings->bind("exit", [processor, window](){return processor->pressed(NC_KEY_ESCAPE);});
-	bindings->bind("toggle_cursor", [processor, window](){return processor->pressed(NC_KEY_TAB);});
-	bindings->bind("up", [processor](){return processor->pressed(NC_KEY_W) || processor->pressed(NC_KEY_UP);});
-	bindings->bind("down", [processor](){return processor->pressed(NC_KEY_S) || processor->pressed(NC_KEY_DOWN);});
-	bindings->bind("left", [processor](){return processor->pressed(NC_KEY_A) || processor->pressed(NC_KEY_LEFT);});
-	bindings->bind("right", [processor](){return processor->pressed(NC_KEY_D) || processor->pressed(NC_KEY_RIGHT);});
+	bindings->bind("core:exit", [processor, window](){return processor->pressed(NC_KEY_ESCAPE);});
+	bindings->bind("core:toggle_cursor", [processor, window](){return processor->pressed(NC_KEY_TAB);});
+	bindings->bind("core:up", [processor](){return processor->pressed(NC_KEY_W) || processor->pressed(NC_KEY_UP);});
+	bindings->bind("core:down", [processor](){return processor->pressed(NC_KEY_S) || processor->pressed(NC_KEY_DOWN);});
+	bindings->bind("core:left", [processor](){return processor->pressed(NC_KEY_A) || processor->pressed(NC_KEY_LEFT);});
+	bindings->bind("core:right", [processor](){return processor->pressed(NC_KEY_D) || processor->pressed(NC_KEY_RIGHT);});
+	bindings->bind("core:elevate", [processor](){return processor->pressed(NC_KEY_SPACE);});
+	bindings->bind("core:lower", [processor](){return processor->pressed(NC_KEY_LEFT_SHIFT);});
+
+	bindings->hotkey("core:exit", [window](){window->setShouldClose(true);});
+	bindings->hotkey("core:toggle_cursor", [window](){window->setCursorVisibility(!window->isCursorVisible());});
 
 	// loading assets
 	AssetsLoader loader;
@@ -94,22 +99,14 @@ void Necore::mainloop(NeContext* context) {
 
 	Batch2D batch(1024);
 
-	float mx = 0.0f;
-	float my = 0.0f;
-
 	while (!window->shouldClose()) {
 		context->timer += 16;
 		window->pollEvents();
 		context->bindings.update();
-		if (context->bindings.justActived("exit")) {
-			break;
-		}
-		if (context->bindings.justActived("toggle_cursor")) {
-			window->setCursorVisibility(!window->isCursorVisible());
-		}
 
 		context->stage->act(context);
 		context->stage3d->act(context);
+		context->freeCamera.update(context);
 
 
 		window->clear();
@@ -118,25 +115,9 @@ void Necore::mainloop(NeContext* context) {
 		batch.setShader("shaders/ui");
 
 		Camera* camera = context->camera;
-		if (!window->isCursorVisible()) {
-			mx -= window->getInputProcessor()->dy/(float)window->getHeight();
-			my -= window->getInputProcessor()->dx/(float)window->getHeight();
-			camera->setRotation(glm::mat4(1.0f));
-			camera->rotate(mx, my, 0);
-		}
-		glm::vec3 motion {0.0f, 0.0f, 0.0f};
-		float speed = 0.3f;
-		glm::vec3 front = camera->getFront();
-		glm::vec3 right = camera->getRight();
-		if (context->bindings.isActive("up")) {motion += front*speed;};
-		if (context->bindings.isActive("down")) {motion -= front*speed;};
-		if (context->bindings.isActive("left")) {motion -= right*speed;};
-		if (context->bindings.isActive("right")) {motion += right*speed;};
-		camera->translate(motion);
-
 		Shader* shader = (Shader*)context->assets.get("shaders/g3d");
 		shader->use();
-		shader->uniformMatrix("u_proj", camera->getProjection((float)context->window->getWidth()/(float)context->window->getHeight()));
+		shader->uniformMatrix("u_proj", camera->getProjection(context->window->getRatio()));
 		shader->uniformMatrix("u_view", camera->getView());
 		context->stage3d->draw(context, &batch);
 

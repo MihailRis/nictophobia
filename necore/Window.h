@@ -12,6 +12,8 @@ public:
 
 	virtual bool shouldClose() = 0;
 
+	virtual void setShouldClose(bool flag) = 0;
+
 	virtual void swapBuffers() = 0;
 
 	virtual void swapInterval(int interval) = 0;
@@ -36,6 +38,10 @@ public:
 
 	virtual InputProcessor* getInputProcessor() const {
 		return processor;
+	}
+
+	float getRatio() const {
+		return (float)getWidth()/(float)getHeight();
 	}
 };
 

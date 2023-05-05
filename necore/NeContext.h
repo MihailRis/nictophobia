@@ -4,10 +4,12 @@
 #include <vector>
 #include "assets/AssetsLoader.h"
 #include "input/InputBinding.h"
+#include "debug/FreeCamera.h"
 
 class Window;
 class Stage;
 class Camera;
+class FreeCamera;
 
 class NeContext {
 public:
@@ -18,6 +20,7 @@ public:
 	Stage* stage = nullptr;
 	Stage* stage3d = nullptr;
 	Camera* camera = nullptr;
+	FreeCamera freeCamera;
 	unsigned long long timer = 0;
 
 	NeContext(Window* window);

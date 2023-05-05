@@ -25,6 +25,7 @@
 #include "necore/version.h"
 #include "necore/Font.h"
 #include "necore/FreeTypeFont.h"
+#include "necore/debug/FreeCamera.h"
 
 void queueAssets(AssetsLoader* loader) {
 	FreeTypeFontLoader* ftloader = new FreeTypeFontLoader();
@@ -66,6 +67,7 @@ int buildTheGame(NeContext* context) {
 			//context->assets.put("mesh-"+std::to_string((uint64_t)mesh.mesh), res);
 		}
 	}
+	context->freeCamera.setCamera(context->camera);
 
 	return 0;
 }

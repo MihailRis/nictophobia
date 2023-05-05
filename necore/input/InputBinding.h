@@ -4,12 +4,15 @@
 #include <unordered_map>
 #include <functional>
 #include <string>
+#include <vector>
 
 typedef std::function<bool()> trigger_func;
+typedef std::function<void()> hotkey_callback;
 
 class InputBinding {
 	trigger_func trigger;
 	char status = 0;
+	std::vector<hotkey_callback> callbacks;
 public:
 	InputBinding(trigger_func trigger);
 
@@ -19,6 +22,9 @@ public:
 	bool isActive() const;
 	bool justActived() const;
 	bool justInactived() const;
+	void addCallback(hotkey_callback callback) {
+		callbacks.push_back(callback);
+	}
 };
 
 template <typename T>
@@ -34,6 +40,8 @@ public:
 	bool isActive(T name);
 	bool justActived(T name);
 	bool justInactived(T name);
+
+	void hotkey(T name, hotkey_callback callback);
 };
 template class InputBindings<int>;
 template class InputBindings<std::string>;

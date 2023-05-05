@@ -24,6 +24,8 @@ public:
 
 	bool shouldClose();
 
+	void setShouldClose(bool flag);
+
 	void swapBuffers();
 
 	void swapInterval(int interval);
