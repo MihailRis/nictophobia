@@ -36,6 +36,9 @@ void queueAssets(AssetsLoader* loader) {
 		FreeTypeFont* font = ftloader->create(iopath("res:UbuntuMono-R.ttf"), 16);
 		return NeResource(SIMPLE, font, [](void* ptr){delete (FreeTypeFont*)ptr;});
 	});
+	loader->queue("textures/font", []() {
+		return NeResource(SIMPLE, load_texture(iopath("res:font.png")), [](void* ptr){delete (Texture*)ptr;});
+	});
 }
 
 int buildTheGame(NeContext* context) {
@@ -58,6 +61,8 @@ int buildTheGame(NeContext* context) {
 			Shader* shader = (Shader*) context->assets.get("shaders/g3d");
 			shader->uniformMatrix("u_model", glm::translate(glm::mat4(1.0f), position));
 			Mesh* mesh = (Mesh*)context->assets.get("mesh");
+			Texture* texture = (Texture*)context->assets.get("textures/font");
+			texture->bind();
 			mesh->draw();
 		};
 		stage->add(object);
