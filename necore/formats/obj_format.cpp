@@ -1,6 +1,4 @@
 #include "obj_format.h"
-#include "../Mesh.h"
-#include "../gl/GLMesh.h"
 
 #include <string_view>
 #include <sstream>
@@ -63,9 +61,7 @@ obj_mesh build_obj_mesh(vertex_data vdata, vector<string>& lines, size_t& pos) {
 		}
 		pos++;
 	}
-	vattr_t attrs[] = {{3}, {2}, {3}, {0}};
-	Mesh* mesh = GLMesh::create(buffer.data(), buffer.size() / 8, attrs);
-	return {mtlname, mesh};
+	return {mtlname, buffer};
 }
 
 obj_object load_obj_object(vector<string> lines, size_t& pos) {

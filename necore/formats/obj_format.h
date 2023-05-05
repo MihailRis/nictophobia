@@ -3,12 +3,11 @@
 
 #include <string>
 #include <vector>
-
-class Mesh;
+#include <memory>
 
 struct obj_mesh {
 	std::string name;
-	Mesh* mesh;
+	std::vector<float> data;
 };
 
 struct obj_object {
