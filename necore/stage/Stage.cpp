@@ -5,11 +5,15 @@
 
 #include "../Camera.h"
 #include "../Batch2D.h"
+#include "../NeContext.h"
+#include "../Camera.h"
+#include "../Window.h"
+#include "../Shader.h"
 
 #include <iostream>
 
 
-Stage::Stage(Camera* camera) : camera(camera) {}
+Stage::Stage(Camera* camera, std::string mainShader) : camera(camera), mainShader(mainShader) {}
 
 Stage::~Stage() {
 	for (Object* object : objects) {
@@ -30,13 +34,15 @@ void Stage::act(NeContext* context) {
 	for (Object* object : objects) {
 		if (object && object->callback) {
 			object->callback(context, object);
-		} else {
-			std::cout << "wtf" << std::endl;
 		}
 	}
 }
 
 void Stage::draw(NeContext* context, Batch2D* batch) {
+	Shader* shader = (Shader*)context->assets.get("shaders/g3d");
+	shader->use();
+	shader->uniformMatrix("u_proj", camera->getProjection(context->window->getRatio()));
+	shader->uniformMatrix("u_view", camera->getView());
 	batch->setCamera(camera);
 	for (Object* object : objects) {
 		if (object->drawCallback) {

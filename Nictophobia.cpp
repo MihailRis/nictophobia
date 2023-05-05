@@ -40,24 +40,28 @@ void queueAssets(AssetsLoader* loader) {
 
 int buildTheGame(NeContext* context) {
 	// setting up stage
-	Stage* stage2d = new Stage(new Camera({0, 0, 0}, context->window->getHeight(), false));
+	Stage* stage2d = new Stage(new Camera({0, 0, 0}, context->window->getHeight(), false), "shaders/ui");
 	context->stage = stage2d;
 
 	context->camera = new Camera(glm::vec3(0, 2, 10), 3.141592/3, true);
-	Stage* stage = new Stage(context->camera);
+	Stage* stage = new Stage(context->camera, "shaders/g3d");
 	context->stage3d = stage;
 
-	Object* object = new Object({0, 0, 0});
-	object->callback = [](NeContext*, Object*) {
-	};
-	object->drawCallback = [](NeContext* context, Batch2D*, Object* object) {
-		glm::vec3 position = object->getPosition();
-		Shader* shader = (Shader*) context->assets.get("shaders/g3d");
-		shader->uniformMatrix("u_model", glm::translate(glm::mat4(1.0f), position));
-		Mesh* mesh = (Mesh*)context->assets.get("mesh");
-		mesh->draw();
-	};
-	stage->add(object);
+	for (int i = 0; i < 10; i++) {
+		Object* object = new Object({i*2, 0, 0});
+		glm::vec3 initpos = object->getPosition();
+		object->callback = [i, initpos](NeContext* context, Object* object) {
+			object->setPosition(initpos+glm::vec3(0, sin(context->timer / 400.0f + i), 0));
+		};
+		object->drawCallback = [](NeContext* context, Batch2D*, Object* object) {
+			glm::vec3 position = object->getPosition();
+			Shader* shader = (Shader*) context->assets.get("shaders/g3d");
+			shader->uniformMatrix("u_model", glm::translate(glm::mat4(1.0f), position));
+			Mesh* mesh = (Mesh*)context->assets.get("mesh");
+			mesh->draw();
+		};
+		stage->add(object);
+	}
 
 	std::vector<obj_object> objects = load_obj_model(iopath("res:cube.obj").readString());
 	for (obj_object obj : objects) {

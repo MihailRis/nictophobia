@@ -103,10 +103,9 @@ void Necore::mainloop(NeContext* context) {
 		context->timer += 16;
 		window->pollEvents();
 		context->bindings.update();
-
+		context->freeCamera.update(context);
 		context->stage->act(context);
 		context->stage3d->act(context);
-		context->freeCamera.update(context);
 
 
 		window->clear();
@@ -114,11 +113,6 @@ void Necore::mainloop(NeContext* context) {
 		batch.begin(window, &context->assets);
 		batch.setShader("shaders/ui");
 
-		Camera* camera = context->camera;
-		Shader* shader = (Shader*)context->assets.get("shaders/g3d");
-		shader->use();
-		shader->uniformMatrix("u_proj", camera->getProjection(context->window->getRatio()));
-		shader->uniformMatrix("u_view", camera->getView());
 		context->stage3d->draw(context, &batch);
 
 		batch.begin(window, &context->assets);

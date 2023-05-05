@@ -25,6 +25,10 @@ public:
 		position.z += dz;
 	}
 
+	void setPosition(glm::vec3 position) {
+		this->position = position;
+	}
+
 	glm::vec3 getPosition() const {
 		return position;
 	}

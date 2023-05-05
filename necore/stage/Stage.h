@@ -12,8 +12,9 @@ class Camera;
 class Stage {
 	std::vector<Object*> objects;
 	Camera* camera;
+	std::string mainShader;
 public:
-	Stage(Camera* camera);
+	Stage(Camera* camera, std::string mainShader);
 	virtual ~Stage();
 
 	// just for debug
