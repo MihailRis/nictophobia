@@ -16,6 +16,7 @@ public:
 	int getWidth() const;
 	int getHeight() const;
 	void bind();
+	void setSmooth(bool flag);
 
 	static GLTexture* fromImage(RasterImage* image);
 };

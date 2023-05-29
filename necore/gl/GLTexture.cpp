@@ -22,6 +22,17 @@ void GLTexture::bind() {
 	glBindTexture(GL_TEXTURE_2D, id);
 }
 
+void GLTexture::setSmooth(bool flag) {
+    glBindTexture(GL_TEXTURE_2D, id);
+    if (flag) {
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    } else {
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    }
+}
+
 GLTexture* GLTexture::fromImage(RasterImage* image) {
     unsigned int texture;
     int format = GL_RGB;

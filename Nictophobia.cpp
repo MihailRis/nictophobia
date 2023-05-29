@@ -28,6 +28,7 @@
 #include "necore/debug/FreeCamera.h"
 #include "necore/gl/GLTexture.h"
 #include "necore/gl/GLMesh.h"
+#include "necore/g2d/LMPacker.h"
 #include "necore/RasterImage.h"
 
 void queueAssets(AssetsLoader* loader) {
@@ -43,6 +44,27 @@ void queueAssets(AssetsLoader* loader) {
 		return NeResource(SIMPLE, load_texture(iopath("res:font.png")), [](void* ptr){delete (Texture*)ptr;});
 	});
 }
+
+inline float area(int x1, int y1, int x2, int y2, int x3, int y3) {
+   return abs((x1*(y2-y3) + x2*(y3-y1)+ x3*(y1-y2))/2.0);
+}
+
+inline bool isInside(const glm::vec2 p1, const glm::vec2 p2, const glm::vec2 p3, int x, int y) {
+   float A = area(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y);
+
+   float A1 = area(x, y, p2.x, p2.y, p3.x, p3.y);
+
+   float A2 = area(p1.x, p1.y, x, y, p3.x, p3.y);
+
+   float A3 = area(p1.x, p1.y, p2.x, p2.y, x, y);
+
+   return (A == A1 + A2 + A3);
+}
+
+inline float randf(int range) {
+	return rand() % range;
+}
+
 
 int buildTheGame(NeContext* context) {
 	// setting up stage
@@ -70,19 +92,120 @@ int buildTheGame(NeContext* context) {
 		stage->add(object);
 	}
 
-	int w = 512;
-	int h = 512;
-	unsigned char* raster = new unsigned char[w * h * 3];
-	RasterImage image(RGB, {raster}, w, h);
+	int w = 1024;
+	int h = 1024;
+	unsigned char* raster = new unsigned char[w * h * 4];
+	for (int i = 0; i < w * h * 4; i++) {
+		raster[i] = 0;
+	}
+	RasterImage image(RGBA, {raster}, w, h);
 
+	glm::vec2 dimensions {w,h};
 	std::vector<obj_object> objects = load_obj_model(iopath("res:room.obj").readString());
 	for (obj_object obj : objects) {
 		for (obj_mesh mesh : obj.meshes){
-			const std::vector<float>& buffer = mesh.data;
-			for (int y = 0; y < h; y++) {
-				for (int x = 0; x < w; x++) {
-					for (int i = 0; i < 3; i++) {
-						raster[(y * w + x) * 3 + i] = rand() % 256;
+			std::vector<float>& buffer = mesh.data;
+			const int vsize = 8;
+			const int tcoord_offset = 3;
+			// iterate triangles
+			float* data = buffer.data();
+
+			unsigned int triangle_c = buffer.size() / vsize / 3;
+			std::cout << "faces: " << triangle_c << std::endl;
+			uint32_t* sizes = new uint32_t[triangle_c*2];
+
+			glm::vec3** rearranges = new glm::vec3*[triangle_c*3];
+
+			float scale = 30;
+			for (unsigned int t = 0; t < triangle_c; t++) {
+				glm::vec3* v1 = ((glm::vec3*)(data + (t * 3 + 0) * vsize));
+				glm::vec3* v2 = ((glm::vec3*)(data + (t * 3 + 1) * vsize));
+				glm::vec3* v3 = ((glm::vec3*)(data + (t * 3 + 2) * vsize));
+
+
+				/*while (glm::distance(*v1, *v2) < glm::distance(*v1, *v3) || glm::distance(*v1, *v2) < glm::distance(*v2, *v3)) {
+					glm::vec3* p1 = v2;
+					glm::vec3* p2 = v3;
+					glm::vec3* p3 = v1;
+					v1 = p1;
+					v2 = p2;
+					v3 = p3;
+				}*/
+
+				// now v1-v2 - is the longest edge
+				float th = fmax(1, fmin(glm::distance(*v1, *v2), fmin(glm::distance(*v1, *v3), glm::distance(*v2, *v3))) * scale);
+				float tw = fmax(1, fmax(glm::distance(*v1, *v2), fmax(glm::distance(*v1, *v3), glm::distance(*v2, *v3))) * scale);
+
+				rearranges[t * 3 + 0] = v1;
+				rearranges[t * 3 + 1] = v2;
+				rearranges[t * 3 + 2] = v3;
+
+
+				sizes[t*2 + 0] = scale;
+				sizes[t*2 + 1] = scale;
+			}
+
+			LMPacker packer(sizes, triangle_c*2);
+			packer.buildCompact(w, h, 1);
+
+			auto rects = packer.getResult();
+			for (unsigned int t = 0; t < triangle_c; t++) {
+				rectangle rect = rects[t];
+				float u1 = rect.x / (float)w;
+				float v1 = rect.y / (float)h;
+				float u2 = (rect.x+rect.width) / (float)w;
+				float v2 = (rect.y+rect.height) / (float)h;
+
+				*(glm::vec2*)(rearranges[t*3+0] + 1) = {u1, v1};
+				*(glm::vec2*)(rearranges[t*3+1] + 1) = {u2, v2};
+				*(glm::vec2*)(rearranges[t*3+2] + 1) = {u1, v2};
+			}
+
+			delete[] rearranges;
+
+			for (unsigned int t = 0; t < triangle_c; t++) {
+				glm::vec3 v1 = *((glm::vec3*)(data + (t * 3 + 0) * vsize));
+				glm::vec3 v2 = *((glm::vec3*)(data + (t * 3 + 1) * vsize));
+				glm::vec3 v3 = *((glm::vec3*)(data + (t * 3 + 2) * vsize));
+
+				glm::vec2 t1 = *((glm::vec2*)(data + (t * 3 + 0) * vsize + tcoord_offset)) * dimensions;
+				glm::vec2 t2 = *((glm::vec2*)(data + (t * 3 + 1) * vsize + tcoord_offset)) * dimensions;
+				glm::vec2 t3 = *((glm::vec2*)(data + (t * 3 + 2) * vsize + tcoord_offset)) * dimensions;
+
+				float minX = fmin(fmin(t1.x, t2.x), t3.x);
+				float minY = fmin(fmin(t1.y, t2.y), t3.y);
+
+				float maxX = fmax(fmax(t1.x, t2.x), t3.x);
+				float maxY = fmax(fmax(t1.y, t2.y), t3.y);
+
+				for (int y = minY; y < maxY; y++) {
+					for (int x = minX; x < maxX; x++) {
+						if (!isInside(t1, t2, t3, x, y)) {
+							continue;
+						}
+						glm::vec2 p = {x, y};
+
+						float w1 = ((t2.y - t3.y) * (p.x - t3.x) + (t3.x - t2.x) * (p.y - t3.y)) /
+								   ((t2.y - t3.y) * (t1.x - t3.x) + (t3.x - t2.x) * (t1.y - t3.y));
+
+						float w2 = ((t3.y - t1.y) * (p.x - t3.x) + (t1.x - t3.x) * (p.y - t3.y)) /
+								   ((t2.y - t3.y) * (t1.x - t3.x) + (t3.x - t2.x) * (t1.y - t3.y));
+
+						float w3 = 1.0f - w1 - w2;
+
+						glm::vec3 coord = v1 * w1 + v2 * w2 + v3 * w3;
+						float d = 1.0f/fmax(0.01f, length(coord));
+						d = fmin(1.0f, d);
+						glm::vec3 color = {d,d,d};
+						//color = {w1, w2, w3};
+						color *= 255;
+						color = {(x-minX)/(float)(maxX-minX), (y-minY)/(float)(maxY-minY), 0.0f};
+						color *= 255;
+
+						raster[(y * w + x) * 4 + 0] = color.r;
+						raster[(y * w + x) * 4 + 1] = color.g;
+						raster[(y * w + x) * 4 + 2] = color.b;
+						raster[(y * w + x) * 4 + 3] = 255;
 					}
 				}
 			}
@@ -90,10 +213,39 @@ int buildTheGame(NeContext* context) {
 			Mesh* glmesh = GLMesh::create(buffer.data(), buffer.size() / 8, attrs);
 			NeResource res = {SIMPLE, glmesh, [](void* v){delete (Mesh*)v;}};
 			context->assets.put("mesh", res);
-			//context->assets.put("mesh-"+std::to_string((uint64_t)mesh.mesh), res);
+			//context->assets.put("mesh-"+std::to_string((uint64_t)glmesh), res);
 		}
 	}
-	context->assets.put("textures/lightmap", NeResource {SIMPLE, GLTexture::fromImage(&image), [](void* ptr){delete (Texture*)ptr;}});
+	unsigned char* ebuffer = new unsigned char[w * h * 4];
+	for (int k = 0; k < 1; k++) {
+		for (int i = 0; i < w * h * 4; i++) {
+			ebuffer[i] = raster[i];
+		}
+
+		for (int y = 1; y < h-1; y++) {
+			for (int x = 1; x < w-1; x++) {
+				int index = y * w + x;
+				if (ebuffer[index * 4 + 3]){
+					for (int r = -1; r <= 1; r++) {
+						for (int c = -1; c <= 1; c++) {
+							if (!(c|r)){
+								continue;
+							}
+							for (int i = 0; i < 4; i++) {
+								raster[((y + r) * w + x + c) * 4 + i] = ebuffer[index * 4 + i];
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	delete[] ebuffer;
+	iopath("res:output.data").writeBytes(raster, w*h*4);
+
+	Texture* texture = GLTexture::fromImage(&image);
+	texture->setSmooth(true);
+	context->assets.put("textures/lightmap", NeResource {SIMPLE, texture, [](void* ptr){delete (Texture*)ptr;}});
 	context->freeCamera.setCamera(context->camera);
 
 	return 0;
