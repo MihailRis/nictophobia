@@ -1,0 +1,13 @@
+{
+   <glew>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   obj:*
+   obj:*
+   fun:glXGetClientString
+   fun:glxewInit
+   fun:glewInit
+   fun:_ZN6Window6createEjjPKcb
+   fun:main
+}

@@ -4,13 +4,21 @@ project(nictophobia)
 set(CMAKE_CXX_STANDARD 17)
 
 set(CMAKE_CXX_FLAGS "-Wall -Wextra -g")
-set(SOURCE Nictophobia.cpp
+
+add_executable(nictophobia Nictophobia.cpp)
+
+# module miocpp
+target_sources(nictophobia PRIVATE
 	miocpp/iopath.cpp
 	miocpp/IODevice.cpp
 	miocpp/DirDevice.cpp
 	miocpp/FileReader.cpp
 	miocpp/PhysicalFileReader.cpp
-	miocpp/mio.cpp
+	miocpp/mio.cpp)
+	
+
+# module necore
+target_sources(nictophobia PRIVATE
 	necore/Window.cpp
 	necore/Texture.cpp
 	necore/Shader.cpp
@@ -38,8 +46,6 @@ set(SOURCE Nictophobia.cpp
 	necore/gl/GLTexture.cpp
 	necore/gl/GLShader.cpp
 	necore/gl/GLMesh.cpp)
-	
-add_executable(nictophobia "${SOURCE}")
 
 find_package(Freetype REQUIRED)
 target_link_libraries(nictophobia ${FREETYPE_LIBRARIES})
