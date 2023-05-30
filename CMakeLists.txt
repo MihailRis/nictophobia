@@ -22,6 +22,7 @@ set(SOURCE Nictophobia.cpp
 	necore/RasterImage.cpp
 	necore/NeContext.cpp
 	necore/Necore.cpp
+	necore/NeAssets.cpp
 	necore/debug/FreeCamera.cpp
 	necore/formats/png_format.cpp
 	necore/formats/obj_format.cpp
@@ -29,7 +30,6 @@ set(SOURCE Nictophobia.cpp
 	necore/input/InputBinding.cpp
 	necore/assets/Assets.cpp
 	necore/assets/AssetsLoader.cpp
-	necore/assets/assets_loading.cpp
 	necore/stage/Stage.cpp
 	necore/stage/Object.cpp
 	necore/g2d/Sprite.cpp

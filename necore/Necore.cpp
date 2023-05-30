@@ -11,8 +11,8 @@
 #include "../miocpp/mio.h"
 #include "../miocpp/DirDevice.h"
 #include "Shader.h"
-#include "assets/assets_loading.h"
 #include "input/input_constants.h"
+#include "NeAssets.h"
 
 #include "version.h"
 
@@ -30,8 +30,7 @@ void queue_default_assets(AssetsLoader* loader) {
 		if (!path.isFile()) {
 			path = iopath("def:ui");
 		}
-		Shader* shader = load_shader(path);
-		return NeResource(SIMPLE, shader, [](void* ptr){delete (Shader*)ptr;});
+		return neassets::shader(path)();
 	});
 
 	loader->queue("shaders/g3d", [](){
@@ -39,8 +38,7 @@ void queue_default_assets(AssetsLoader* loader) {
 		if (!path.isFile()) {
 			path = iopath("def:g3d");
 		}
-		Shader* shader = load_shader(path);
-		return NeResource(SIMPLE, shader, [](void* ptr){delete (Shader*)ptr;});
+		return neassets::shader(path)();
 	});
 }
 
@@ -72,6 +70,7 @@ int Necore::run(NeGameProject* project) {
 	bindings->hotkey("core:toggle_cursor", [window](){window->setCursorVisibility(!window->isCursorVisible());});
 
 	// loading assets
+	neassets::create_loaders(&context->assets);
 	AssetsLoader loader;
 	queue_default_assets(&loader);
 	project->assets_ask(&loader);
@@ -80,6 +79,7 @@ int Necore::run(NeGameProject* project) {
 		return status;
 	}
 	std::cout << "assets loaded successfully" << std::endl;
+	context->assets.cleanUp();
 
 	if (int status = project->build_game(context)){
 		return status;

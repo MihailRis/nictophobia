@@ -8,7 +8,7 @@
 enum NeResourceType {
 	UNHANDLED,
 	SIMPLE,
-	ARRAY,
+	TEMP,
 };
 
 typedef std::function<void(void*)> resource_destructor_func;
@@ -40,6 +40,8 @@ public:
 	void put(std::string id, NeResource resource) {
 		assets[id] = {resource};
 	}
+
+	void cleanUp();
 };
 
 #endif /* NECORE_ASSETS_ASSETS_H_ */

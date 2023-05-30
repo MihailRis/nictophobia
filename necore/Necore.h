@@ -18,7 +18,7 @@ struct NeGameProject {
 	destruct_game_func destruct_game = nullptr;
 
 	unsigned int init_window_width = 900;
-	unsigned int init_window_height = 600;
+	unsigned int init_window_height = 500;
 };
 
 class Necore {

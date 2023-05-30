@@ -13,7 +13,6 @@
 #include "necore/formats/obj_format.h"
 #include "necore/assets/Assets.h"
 #include "necore/assets/AssetsLoader.h"
-#include "necore/assets/assets_loading.h"
 #include "necore/input/InputProcessor.h"
 #include "necore/input/InputBinding.h"
 #include "necore/input/input_constants.h"
@@ -30,19 +29,11 @@
 #include "necore/gl/GLMesh.h"
 #include "necore/g2d/LMPacker.h"
 #include "necore/RasterImage.h"
+#include "necore/NeAssets.h"
 
 void queueAssets(AssetsLoader* loader) {
-	FreeTypeFontLoader* ftloader = new FreeTypeFontLoader();
-	loader->queue("<ftloader>", [ftloader]() {
-		return NeResource(SIMPLE, ftloader, [](void* ptr){delete (FreeTypeFontLoader*)ptr;});
-	});
-	loader->queue("fonts/ubuntu", [ftloader]() {
-		FreeTypeFont* font = ftloader->create(iopath("res:UbuntuMono-R.ttf"), 16);
-		return NeResource(SIMPLE, font, [](void* ptr){delete (FreeTypeFont*)ptr;});
-	});
-	loader->queue("textures/font", []() {
-		return NeResource(SIMPLE, load_texture(iopath("res:font.png")), [](void* ptr){delete (Texture*)ptr;});
-	});
+	loader->queue("fonts/ubuntu", neassets::font(iopath("res:UbuntuMono-R.ttf"), 16));
+	loader->queue("textures/font", neassets::texture(iopath("res:font.png")));
 }
 
 
@@ -55,18 +46,15 @@ int buildTheGame(NeContext* context) {
 	Stage* stage = new Stage(context->camera, "shaders/g3d");
 	context->stage3d = stage;
 
-	for (int i = 0; i < 1; i++) {
-		Object* object = new Object({i*2, 0, 0});
-		glm::vec3 initpos = object->getPosition();
-		object->callback = [i, initpos](NeContext*, Object*) {
-		};
-		object->drawCallback = [](NeContext* context, Batch2D*, Object* object) {
-			glm::vec3 position = object->getPosition();
-			Shader* shader = (Shader*) context->assets.get("shaders/g3d");
-			shader->uniformMatrix("u_model", glm::translate(glm::mat4(1.0f), position));
-		};
-		stage->add(object);
-	}
+	Object* object = new Object({0, 0, 0});
+	object->callback = [](NeContext*, Object*) {
+	};
+	object->drawCallback = [](NeContext* context, Batch2D*, Object* object) {
+		glm::vec3 position = object->getPosition();
+		Shader* shader = (Shader*) context->assets.get("shaders/g3d");
+		shader->uniformMatrix("u_model", glm::translate(glm::mat4(1.0f), position));
+	};
+	stage->add(object);
 
 	return 0;
 }
