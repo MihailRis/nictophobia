@@ -1,35 +1,19 @@
-#include <iostream>
-#include <functional>
 #include <glm/glm.hpp>
-#include "glm/gtc/matrix_transform.hpp"
-#include "necore/Window.h"
-#include "necore/Batch2D.h"
-#include "necore/Camera.h"
-#include "necore/Texture.h"
-#include "necore/Shader.h"
-#include "necore/Mesh.h"
-#include "necore/NeContext.h"
-#include "necore/formats/png_format.h"
-#include "necore/formats/obj_format.h"
+#include <glm/ext.hpp>
+#include <functional>
+
+#include "miocpp/iopath.h"
 #include "necore/assets/Assets.h"
 #include "necore/assets/AssetsLoader.h"
-#include "necore/input/InputProcessor.h"
-#include "necore/input/InputBinding.h"
-#include "necore/input/input_constants.h"
-#include "necore/stage/Stage.h"
-#include "necore/stage/Object.h"
-#include "miocpp/iopath.h"
-#include "necore/Necore.h"
-#include "necore/colors.h"
-#include "necore/version.h"
-#include "necore/Font.h"
-#include "necore/FreeTypeFont.h"
+#include "necore/Camera.h"
 #include "necore/debug/FreeCamera.h"
-#include "necore/gl/GLTexture.h"
-#include "necore/gl/GLMesh.h"
-#include "necore/g2d/LMPacker.h"
-#include "necore/RasterImage.h"
+#include "necore/Mesh.h"
 #include "necore/NeAssets.h"
+#include "necore/Necore.h"
+#include "necore/NeContext.h"
+#include "necore/stage/Object.h"
+#include "necore/stage/Stage.h"
+#include "necore/Window.h"
 
 void queueAssets(AssetsLoader* loader) {
 	loader->queue("fonts/ubuntu", neassets::font(iopath("res:UbuntuMono-R.ttf"), 16));
@@ -39,7 +23,6 @@ void queueAssets(AssetsLoader* loader) {
 
 
 int buildTheGame(NeContext* context) {
-	// setting up stage
 	Stage* stage2d = new Stage(new Camera({0, 0, 0}, context->window->getHeight(), false), "shaders/ui");
 	context->stage = stage2d;
 
@@ -50,16 +33,12 @@ int buildTheGame(NeContext* context) {
 	Object* object = new Object({0, 0, 0});
 	object->callback = [](NeContext*, Object*) {
 	};
-	object->drawCallback = [](NeContext* context, Batch2D*, Object* object) {
-		glm::vec3 position = object->getPosition();
-		Shader* shader = (Shader*) context->assets.get("shaders/g3d");
+	object->drawCallback = [](NeContext* context, Batch2D*, Object*) {
 		Mesh* mesh = (Mesh*) context->assets.get("meshes/cube");
-		shader->uniformMatrix("u_model", glm::translate(glm::mat4(1.0f), position));
 		mesh->draw();
 	};
 	stage->add(object);
 	context->freeCamera.setCamera(context->camera);
-
 	return 0;
 }
 

@@ -3,6 +3,7 @@
 
 #include <functional>
 #include <glm/glm.hpp>
+#include <glm/ext.hpp>
 
 class Object;
 class NeContext;
@@ -31,6 +32,10 @@ public:
 
 	glm::vec3 getPosition() const {
 		return position;
+	}
+
+	glm::mat4 getMatrix() const {
+		return glm::translate(glm::mat4(1.0f), position);
 	}
 };
 

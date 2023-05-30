@@ -7,5 +7,5 @@ out vec4 f_color;
 uniform sampler2D u_texture;
 
 void main(){
-	f_color = vec4(a_normal + 0.5f, 1.0f);
+	f_color = vec4(a_normal + 0.2f, 1.0f);
 }

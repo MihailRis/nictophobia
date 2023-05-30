@@ -46,6 +46,7 @@ void Stage::draw(NeContext* context, Batch2D* batch) {
 	batch->setCamera(camera);
 	for (Object* object : objects) {
 		if (object->drawCallback) {
+			shader->uniformMatrix("u_model", object->getMatrix());
 			object->drawCallback(context, batch, object);
 		}
 	}
