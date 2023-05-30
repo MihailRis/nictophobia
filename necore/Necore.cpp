@@ -109,6 +109,7 @@ void Necore::mainloop(NeContext* context) {
 		context->freeCamera.update(context);
 		context->stage->act(context);
 		context->stage3d->act(context);
+		context->stage->getCamera()->setFov(window->getHeight());
 		auto elapsed = std::chrono::high_resolution_clock::now() - start;
 		context->frameTimeMicros = std::chrono::duration_cast<std::chrono::microseconds>(
 		        elapsed).count();

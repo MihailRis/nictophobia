@@ -20,6 +20,10 @@ public:
 	glm::mat4 getProjection(float aspect);
 	glm::mat4 getView();
 
+	void setFlipped(bool flag) {
+		flipped = flag;
+	}
+
 	void setFov(float fov);
 	glm::vec3 getPosition() const;
 	void setPosition(glm::vec3 position);

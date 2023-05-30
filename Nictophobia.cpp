@@ -26,13 +26,15 @@ void queueAssets(AssetsLoader* loader) {
 
 int buildTheGame(NeContext* context) {
 	Stage* stage2d = new Stage(new Camera({0, 0, 0}, context->window->getHeight(), false), "shaders/ui");
+	stage2d->getCamera()->setFlipped(true);
 	{
-		Object* object = new Object({5, 5, 0});
+		Object* object = new Object({8, 5, 0});
 		object->drawCallback = [](NeContext* context, Batch2D* batch, Object* object) {
 			glm::vec3 position = object->getPosition();
 			batch->color(1.0f, 1.0f, 1.0f, 1.0f);
 			long long mcs = context->frameTimeMicros;
-			batch->drawText("fonts/ubuntu", L"mcs elapsed: "+std::to_wstring(mcs)+L", ms: "+std::to_wstring(mcs/1000), position.x, position.y, true, true, context->timer * 0.001f);
+			batch->drawText("fonts/ubuntu", L"mcs elapsed: "+std::to_wstring(mcs)+L", ms: "+std::to_wstring(mcs/1000),
+					position.x, position.y, true, false, context->timer * 0.001f);
 			batch->flush();
 		};
 		stage2d->add(object);
@@ -45,8 +47,8 @@ int buildTheGame(NeContext* context) {
 	context->stage3d = stage;
 
 	int k = 0;
-	for (int z = 0; z < 20; z+=2) {
-		for (int x = 0; x < 20; x+=2, k++) {
+	for (int z = 0; z < 60; z+=3) {
+		for (int x = 0; x < 60; x+=3, k++) {
 			{
 				Object* object = new Object({x, 0, z});
 				object->callback = [x, z, k](NeContext* context, Object* object) {
