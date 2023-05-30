@@ -61,6 +61,10 @@ void Batch2D::color(float r, float g, float b, float a) {
 	tint = {r, g, b, a};
 }
 
+void Batch2D::uncolor() {
+	tint = {1.0f, 1.0f, 1.0f, 1.0f};
+}
+
 void Batch2D::rect(float x, float y, float w, float h) {
 	vertex(x, y, 0, 0);
 	vertex(x, y+h, 0, 1);

@@ -26,6 +26,8 @@ public:
 
 	virtual bool isCursorVisible() = 0;
 
+	virtual void setDepthTest(bool flag) = 0;
+
 	virtual void clear() = 0;
 
 	virtual unsigned int getWidth() const = 0;

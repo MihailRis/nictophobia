@@ -1,5 +1,6 @@
 #include "Necore.h"
 
+#include <chrono>
 #include "Window.h"
 #include "Batch2D.h"
 #include "Mesh.h"
@@ -101,25 +102,30 @@ void Necore::mainloop(NeContext* context) {
 
 	while (!window->shouldClose()) {
 		context->timer += 16;
+
+		auto start = std::chrono::high_resolution_clock::now();
 		window->pollEvents();
 		context->bindings.update();
 		context->freeCamera.update(context);
 		context->stage->act(context);
 		context->stage3d->act(context);
-
+		auto elapsed = std::chrono::high_resolution_clock::now() - start;
+		context->frameTimeMicros = std::chrono::duration_cast<std::chrono::microseconds>(
+		        elapsed).count();
 
 		window->clear();
 
+		window->setDepthTest(true);
 		batch.begin(window, &context->assets);
 		batch.setShader("shaders/ui");
 
 		context->stage3d->draw(context, &batch);
 
+		window->setDepthTest(false);
 		batch.begin(window, &context->assets);
 		batch.setShader("shaders/ui");
-		//context->stage->draw(context, &batch);
+		context->stage->draw(context, &batch);
 		batch.end();
-
 		window->swapBuffers();
 	}
 }

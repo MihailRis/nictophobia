@@ -50,6 +50,8 @@ public:
 
 	void color(float r, float g, float b, float a);
 
+	void uncolor();
+
 	void rect(float x, float y, float w, float h);
 
 	void rect(float x, float y,float w, float h, float ox, float oy,

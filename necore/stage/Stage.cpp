@@ -39,7 +39,7 @@ void Stage::act(NeContext* context) {
 }
 
 void Stage::draw(NeContext* context, Batch2D* batch) {
-	Shader* shader = (Shader*)context->assets.get("shaders/g3d");
+	Shader* shader = (Shader*)context->assets.get(mainShader);
 	shader->use();
 	shader->uniformMatrix("u_proj", camera->getProjection(context->window->getRatio()));
 	shader->uniformMatrix("u_view", camera->getView());

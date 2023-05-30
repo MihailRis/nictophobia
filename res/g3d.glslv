@@ -13,6 +13,6 @@ uniform mat4 u_model;
 
 void main(){
 	a_textureCoord = v_textureCoord;
-	a_normal = v_normal;
+	a_normal = (vec4(v_normal, 1.0f) * inverse(u_model)).xyz;
 	gl_Position = u_proj * u_view * u_model * vec4(v_position, 1.0);
 }

@@ -22,6 +22,7 @@ public:
 	Camera* camera = nullptr;
 	FreeCamera freeCamera;
 	unsigned long long timer = 0;
+	unsigned long long frameTimeMicros = 0;
 
 	NeContext(Window* window);
 	virtual ~NeContext();

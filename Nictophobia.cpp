@@ -8,9 +8,11 @@
 #include "necore/Camera.h"
 #include "necore/debug/FreeCamera.h"
 #include "necore/Mesh.h"
+#include "necore/Font.h"
 #include "necore/NeAssets.h"
 #include "necore/Necore.h"
 #include "necore/NeContext.h"
+#include "necore/Batch2D.h"
 #include "necore/stage/Object.h"
 #include "necore/stage/Stage.h"
 #include "necore/Window.h"
@@ -24,20 +26,50 @@ void queueAssets(AssetsLoader* loader) {
 
 int buildTheGame(NeContext* context) {
 	Stage* stage2d = new Stage(new Camera({0, 0, 0}, context->window->getHeight(), false), "shaders/ui");
+	{
+		Object* object = new Object({5, 5, 0});
+		object->drawCallback = [](NeContext* context, Batch2D* batch, Object* object) {
+			glm::vec3 position = object->getPosition();
+			batch->color(1.0f, 1.0f, 1.0f, 1.0f);
+			long long mcs = context->frameTimeMicros;
+			batch->drawText("fonts/ubuntu", L"mcs elapsed: "+std::to_wstring(mcs)+L", ms: "+std::to_wstring(mcs/1000), position.x, position.y, true, true, context->timer * 0.001f);
+			batch->flush();
+		};
+		stage2d->add(object);
+
+	}
 	context->stage = stage2d;
 
 	context->camera = new Camera(glm::vec3(0, 2, 10), 3.141592/3, true);
 	Stage* stage = new Stage(context->camera, "shaders/g3d");
 	context->stage3d = stage;
 
-	Object* object = new Object({0, 0, 0});
-	object->callback = [](NeContext*, Object*) {
-	};
-	object->drawCallback = [](NeContext* context, Batch2D*, Object*) {
-		Mesh* mesh = (Mesh*) context->assets.get("meshes/cube");
-		mesh->draw();
-	};
-	stage->add(object);
+	int k = 0;
+	for (int z = 0; z < 20; z+=2) {
+		for (int x = 0; x < 20; x+=2, k++) {
+			{
+				Object* object = new Object({x, 0, z});
+				object->callback = [x, z, k](NeContext* context, Object* object) {
+					object->setRotation(glm::rotate(glm::mat4(1.0f), context->timer * 0.001f+k, glm::vec3(0.0f,1.0f,0.0f)));
+					object->setPosition(glm::vec3(x, sin(context->timer * 0.002f+k) * 0.5f + 0.5f, z));
+				};
+				object->drawCallback = [](NeContext* context, Batch2D*, Object*) {
+					Mesh* mesh = (Mesh*) context->assets.get("meshes/cube");
+					mesh->draw();
+				};
+				stage->add(object);
+			}
+
+			{
+				Object* object = new Object({x, -2.0f, z});
+				object->drawCallback = [](NeContext* context, Batch2D*, Object*) {
+					Mesh* mesh = (Mesh*) context->assets.get("meshes/cube");
+					mesh->draw();
+				};
+				stage->add(object);
+			}
+		}
+	}
 	context->freeCamera.setCamera(context->camera);
 	return 0;
 }

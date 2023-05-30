@@ -103,6 +103,14 @@ bool GLWindow::isCursorVisible() {
 	return glfwGetInputMode(window, GLFW_CURSOR) == GLFW_CURSOR_NORMAL;
 }
 
+void GLWindow::setDepthTest(bool flag) {
+	if (flag) {
+		glEnable(GL_DEPTH_TEST);
+	} else {
+		glDisable(GL_DEPTH_TEST);
+	}
+}
+
 unsigned int GLWindow::getWidth() const {
 	return width;
 }
@@ -141,7 +149,7 @@ Window* GLWindow::create(int width, int height, const char* title) {
 	glEnable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glEnable(GL_CULL_FACE);
+	//glEnable(GL_CULL_FACE);
 
 	glfwSwapInterval(1);
 

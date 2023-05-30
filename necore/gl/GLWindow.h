@@ -40,6 +40,8 @@ public:
 
 	bool isCursorVisible();
 
+	void setDepthTest(bool flag);
+
 	unsigned int getWidth() const;
 
 	unsigned int getHeight() const;
