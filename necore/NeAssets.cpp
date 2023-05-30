@@ -1,11 +1,14 @@
 #include "NeAssets.h"
 
 #include <iostream>
+#include <vector>
 
 #include "../miocpp/mio.h"
 #include "gl/GLTexture.h"
 #include "gl/GLShader.h"
+#include "gl/GLMesh.h"
 #include "formats/png_format.h"
+#include "formats/obj_format.h"
 #include "RasterImage.h"
 #include "FreeTypeFont.h"
 
@@ -35,6 +38,16 @@ resource_loader_func neassets::font(iopath path, int size) {
 	return [=]() {
 		FreeTypeFont* font = ftloader->create(path, size);
 		return NeResource(SIMPLE, font, [](void* ptr){delete (FreeTypeFont*)ptr;});
+	};
+}
+
+resource_loader_func neassets::mesh(iopath path) {
+	return [=]() {
+		std::vector<obj_object> objects = load_obj_model(path.readString());
+		std::vector<float> data = objects[0].meshes[0].data;
+		vattr_t attrs[] {{3}, {2}, {3}, {0}};
+		Mesh* mesh = GLMesh::create(data.data(), data.size()/8, attrs);
+		return NeResource(SIMPLE, mesh, [](void* ptr){delete (Mesh*)ptr;});
 	};
 }
 

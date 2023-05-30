@@ -22,7 +22,7 @@ void FreeCamera::update(NeContext* context) {
 		camera->rotate(mx, my, 0);
 	}
 	glm::vec3 motion {0.0f, 0.0f, 0.0f};
-	float speed = 0.3f;
+	float speed = 0.016f * 4.0f;
 	glm::vec3 front = camera->getFront();
 	glm::vec3 right = camera->getRight();
 	glm::vec3 up = camera->getUp();

@@ -14,6 +14,7 @@ namespace neassets {
 	resource_loader_func texture(iopath);
 	resource_loader_func shader(iopath);
 	resource_loader_func font(iopath, int size);
+	resource_loader_func mesh(iopath);
 
 
 	Texture* load_texture(iopath);

@@ -34,6 +34,7 @@
 void queueAssets(AssetsLoader* loader) {
 	loader->queue("fonts/ubuntu", neassets::font(iopath("res:UbuntuMono-R.ttf"), 16));
 	loader->queue("textures/font", neassets::texture(iopath("res:font.png")));
+	loader->queue("meshes/cube", neassets::mesh(iopath("res:cube.obj")));
 }
 
 
@@ -52,9 +53,12 @@ int buildTheGame(NeContext* context) {
 	object->drawCallback = [](NeContext* context, Batch2D*, Object* object) {
 		glm::vec3 position = object->getPosition();
 		Shader* shader = (Shader*) context->assets.get("shaders/g3d");
+		Mesh* mesh = (Mesh*) context->assets.get("meshes/cube");
 		shader->uniformMatrix("u_model", glm::translate(glm::mat4(1.0f), position));
+		mesh->draw();
 	};
 	stage->add(object);
+	context->freeCamera.setCamera(context->camera);
 
 	return 0;
 }
