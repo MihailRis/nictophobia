@@ -8,8 +8,9 @@
 class Object;
 class NeContext;
 class Batch2D;
+class Batch3D;
 
-typedef std::function<void(NeContext*, Batch2D*, Object*)> draw_func;
+typedef std::function<void(NeContext*, Batch2D*, Batch3D*, Object*)> draw_func;
 typedef std::function<void(NeContext*, Object*)> update_callback;
 
 class Object {

@@ -3,6 +3,7 @@
 #include <chrono>
 #include "Window.h"
 #include "Batch2D.h"
+#include "g3d/Batch3D.h"
 #include "Mesh.h"
 #include "NeContext.h"
 #include "Camera.h"
@@ -99,6 +100,7 @@ void Necore::mainloop(NeContext* context) {
 	Window* window = context->window;
 
 	Batch2D batch(1024);
+	Batch3D batch3d(4096*2);
 
 	while (!window->shouldClose()) {
 		context->timer += 16;
@@ -110,23 +112,25 @@ void Necore::mainloop(NeContext* context) {
 		context->stage->act(context);
 		context->stage3d->act(context);
 		context->stage->getCamera()->setFov(window->getHeight());
+
+		window->setDepthTest(true);
+		batch3d.begin(window, &context->assets);
+		batch3d.setShader("shaders/g3d");
+		context->stage3d->draw(context, &batch, &batch3d);
+		batch3d.flush();
+
 		auto elapsed = std::chrono::high_resolution_clock::now() - start;
 		context->frameTimeMicros = std::chrono::duration_cast<std::chrono::microseconds>(
 		        elapsed).count();
 
-		window->clear();
-
-		window->setDepthTest(true);
-		batch.begin(window, &context->assets);
-		batch.setShader("shaders/ui");
-
-		context->stage3d->draw(context, &batch);
-
 		window->setDepthTest(false);
 		batch.begin(window, &context->assets);
 		batch.setShader("shaders/ui");
-		context->stage->draw(context, &batch);
+		context->stage->draw(context, &batch, &batch3d);
 		batch.end();
+
 		window->swapBuffers();
+
+		window->clear();
 	}
 }

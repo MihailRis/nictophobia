@@ -13,6 +13,7 @@
 #include "necore/Necore.h"
 #include "necore/NeContext.h"
 #include "necore/Batch2D.h"
+#include "necore/g3d/Batch3D.h"
 #include "necore/stage/Object.h"
 #include "necore/stage/Stage.h"
 #include "necore/Window.h"
@@ -29,11 +30,11 @@ int buildTheGame(NeContext* context) {
 	stage2d->getCamera()->setFlipped(true);
 	{
 		Object* object = new Object({8, 5, 0});
-		object->drawCallback = [](NeContext* context, Batch2D* batch, Object* object) {
+		object->drawCallback = [](NeContext* context, Batch2D* batch, Batch3D*, Object* object) {
 			glm::vec3 position = object->getPosition();
 			batch->color(1.0f, 1.0f, 1.0f, 1.0f);
 			long long mcs = context->frameTimeMicros;
-			batch->drawText("fonts/ubuntu", L"mcs elapsed: "+std::to_wstring(mcs)+L", ms: "+std::to_wstring(mcs/1000),
+			batch->drawText("fonts/ubuntu", L"mcs elapsed: "+std::to_wstring(mcs)+L", ms: "+std::to_wstring(mcs/1000)+L" draw-calls: "+std::to_wstring(Batch3D::drawCalls),
 					position.x, position.y, true, false, context->timer * 0.001f);
 			batch->flush();
 		};
@@ -47,26 +48,28 @@ int buildTheGame(NeContext* context) {
 	context->stage3d = stage;
 
 	int k = 0;
-	for (int z = 0; z < 60; z+=3) {
-		for (int x = 0; x < 60; x+=3, k++) {
+	for (int z = 0; z < 240; z+=3) {
+		for (int x = 0; x < 240; x+=3, k++) {
 			{
 				Object* object = new Object({x, 0, z});
 				object->callback = [x, z, k](NeContext* context, Object* object) {
 					object->setRotation(glm::rotate(glm::mat4(1.0f), context->timer * 0.001f+k, glm::vec3(0.0f,1.0f,0.0f)));
 					object->setPosition(glm::vec3(x, sin(context->timer * 0.002f+k) * 0.5f + 0.5f, z));
 				};
-				object->drawCallback = [](NeContext* context, Batch2D*, Object*) {
+				object->drawCallback = [](NeContext* context, Batch2D*, Batch3D* batch3d, Object* object) {
 					Mesh* mesh = (Mesh*) context->assets.get("meshes/cube");
-					mesh->draw();
+					MeshData* meshData = mesh->getData();
+					batch3d->putCTN(meshData, object->getMatrix());
 				};
 				stage->add(object);
 			}
 
 			{
 				Object* object = new Object({x, -2.0f, z});
-				object->drawCallback = [](NeContext* context, Batch2D*, Object*) {
+				object->drawCallback = [](NeContext* context, Batch2D*, Batch3D* batch3d, Object* object) {
 					Mesh* mesh = (Mesh*) context->assets.get("meshes/cube");
-					mesh->draw();
+					MeshData* meshData = mesh->getData();
+					batch3d->putCTN(meshData, object->getPosition());
 				};
 				stage->add(object);
 			}

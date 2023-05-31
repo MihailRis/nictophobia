@@ -7,6 +7,7 @@
 class Object;
 class NeContext;
 class Batch2D;
+class Batch3D;
 class Camera;
 
 class Stage {
@@ -23,7 +24,7 @@ public:
 	void add(Object* object);
 	void act(NeContext* context);
 
-	void draw(NeContext* context, Batch2D* batch);
+	void draw(NeContext* context, Batch2D* batch, Batch3D* batch3d);
 
 	Camera* getCamera() const {
 		return camera;

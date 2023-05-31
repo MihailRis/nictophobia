@@ -23,6 +23,7 @@ target_sources(nictophobia PRIVATE
 	necore/Texture.cpp
 	necore/Shader.cpp
 	necore/Mesh.cpp
+	necore/MeshData.cpp
 	necore/Font.cpp
 	necore/FreeTypeFont.cpp
 	necore/Batch2D.cpp
@@ -42,10 +43,14 @@ target_sources(nictophobia PRIVATE
 	necore/stage/Object.cpp
 	necore/g2d/Sprite.cpp
 	necore/g2d/LMPacker.cpp
+	necore/g3d/Batch3D.cpp
 	necore/gl/GLWindow.cpp
 	necore/gl/GLTexture.cpp
 	necore/gl/GLShader.cpp
 	necore/gl/GLMesh.cpp)
+	
+SET_SOURCE_FILES_PROPERTIES(necore/g3d/Batch3D.cpp PROPERTIES COMPILE_FLAGS -O3)
+
 
 find_package(Freetype REQUIRED)
 target_link_libraries(nictophobia ${FREETYPE_LIBRARIES})

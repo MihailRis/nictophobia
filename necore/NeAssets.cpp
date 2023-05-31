@@ -44,9 +44,9 @@ resource_loader_func neassets::font(iopath path, int size) {
 resource_loader_func neassets::mesh(iopath path) {
 	return [=]() {
 		std::vector<obj_object> objects = load_obj_model(path.readString());
-		std::vector<float> data = objects[0].meshes[0].data;
+		obj_mesh& objmesh = objects[0].meshes[0];
 		vattr_t attrs[] {{3}, {2}, {3}, {0}};
-		Mesh* mesh = GLMesh::create(data.data(), data.size()/8, attrs);
+		Mesh* mesh = GLMesh::create(objmesh.name, objmesh.data, objmesh.data.size()/8, attrs);
 		return NeResource(SIMPLE, mesh, [](void* ptr){delete (Mesh*)ptr;});
 	};
 }
